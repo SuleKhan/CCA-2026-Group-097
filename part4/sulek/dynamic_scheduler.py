@@ -24,7 +24,7 @@ logger = SchedulerLogger()
 
 def set_memcached_cores(cores):
     core_str = ",".join(map(str, cores))
-    cmd = f"taskset -a -cp {core_str} {MEMCACHED_PID}"
+    cmd = f"sudo taskset -a -cp {core_str} {MEMCACHED_PID}"
     subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL)
 
     logger.update_cores(Job.MEMCACHED, cores)
