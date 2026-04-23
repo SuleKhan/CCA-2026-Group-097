@@ -1,0 +1,11 @@
+measurements_1:
+
+    run setup:
+    ./setup_cluster.sh
+
+    update ip addresses in setup memcache server & python script
+
+    setup agent, measure and memcached
+        -> follow the guides
+
+    run python script measurements_1 from local machine
