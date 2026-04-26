@@ -6,11 +6,8 @@ set -e
 # copy controller:
 # scp -o StrictHostKeyChecking=no -i ~/.ssh/cloud-computing measurements_1.py ubuntu@10.0.16.4:~
 
-# TODO
-# TODO
-# TODO
-MEMCACHE_INTERNAL_IP="10.0.16.4"  
-# TODO
+#MEMCACHED_INTERNAL_IP=$1
+MEMCACHED_INTERNAL_IP="10.0.16.6"
 
 # Update & install
 sudo apt update
@@ -26,7 +23,7 @@ fi
 # Set memory to 1024 MB
 sudo sed -i 's/^-m .*/-m 1024/' $CONFIG_FILE
 
-sudo sed -i "s/^-l .*/-l ${MEMCACHE_INTERNAL_IP}/" $CONFIG_FILE
+sudo sed -i "s/^-l .*/-l ${MEMCACHED_INTERNAL_IP}/" $CONFIG_FILE
 
 # Set default of 1 thread (add if not present)
 if grep -q "^-t" $CONFIG_FILE; then

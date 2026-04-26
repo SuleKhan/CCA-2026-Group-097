@@ -8,4 +8,16 @@ measurements_1:
     setup agent, measure and memcached
         -> follow the guides
 
-    run python script measurements_1 from local machine
+    1) Manual Run:
+        Set Threads and Cores:
+            set cores: 0 / 0,1 / 0,1,2
+            set threads: replace N by number
+                ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0 \$(pidof memcached)"
+        Start Run   
+            CMD on measure: replace: MEASURE_IP, INTERNAL_MEMCACHED_IP, INTERNAL_AGENT_IP
+                ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "cd ~/memcache-perf-dynamic && ./mcperf -s INTERNAL_MEMCACHED_IP --loadonly && ./mcperf -s INTERNAL_MEMCACHED_IP -a INTERNAL_AGENT_IP --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000"
+
+    
+    2) Automated Run: 
+        replace all IP's in measurements_1
+        run python script measurements_1 from local machine

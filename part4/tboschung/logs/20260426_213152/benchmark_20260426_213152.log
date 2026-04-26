@@ -1,0 +1,35 @@
+2026-04-26 21:31:52,924 [INFO] Logging to: logs/20260426_213152/benchmark_20260426_213152.log
+2026-04-26 21:31:52,924 [INFO] ============================================================
+2026-04-26 21:31:52,924 [INFO] Memcached Benchmark Automation
+2026-04-26 21:31:52,924 [INFO]   Thread configs : [1, 2, 4]
+2026-04-26 21:31:52,924 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-04-26 21:31:52,924 [INFO]   Repetitions    : 3
+2026-04-26 21:31:52,924 [INFO]   Total runs     : 27
+2026-04-26 21:31:52,925 [INFO]   Dry run        : False
+2026-04-26 21:31:52,925 [INFO] ============================================================
+2026-04-26 21:31:52,925 [INFO] 
+2026-04-26 21:31:52,925 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:31:52,925 [INFO] CONFIG: threads=1, cores=[0]  [t1_c0]
+2026-04-26 21:31:52,925 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:31:52,925 [INFO]   → Updating config (threads=1) and restarting memcached...
+2026-04-26 21:31:52,925 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached"
+2026-04-26 21:31:54,501 [INFO]   → Waiting 4s for memcached to come back up...
+2026-04-26 21:31:58,507 [INFO]   → Pinning memcached to cores [0]...
+2026-04-26 21:31:58,507 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo taskset -cp 0 $(pidof memcached)"
+2026-04-26 21:31:58,961 [DEBUG] STDERR:
+/bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:31:58,962 [ERROR]   ✗ Command exited with code 1: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo taskset -cp 0 $(pidof memcached)"
+2026-04-26 21:31:58,962 [ERROR]   ✗ taskset failed (cores=0): /bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:31:58,962 [ERROR]   ✗ Failed command: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo taskset -cp 0 $(pidof memcached)"
+2026-04-26 21:31:58,962 [ERROR] Skipping all repetitions for t1_c0 due to config failure.
+2026-04-26 21:31:58,962 [INFO] 
+2026-04-26 21:31:58,962 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:31:58,962 [INFO] CONFIG: threads=1, cores=[0, 1]  [t1_c0_1]
+2026-04-26 21:31:58,962 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:31:58,962 [INFO]   → Updating config (threads=1) and restarting memcached...
+2026-04-26 21:31:58,962 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached"
+2026-04-26 21:31:59,470 [INFO]   → Waiting 4s for memcached to come back up...

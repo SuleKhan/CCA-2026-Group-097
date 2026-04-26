@@ -1,193 +1,317 @@
-import os
-import time
-import itertools
+#!/usr/bin/env python3
+"""
+Memcached Benchmark Automation Script
+Loops over thread and core configurations, runs each N times for consistency,
+and logs all output to structured log files.
+
+Usage:
+    python3 run_benchmark.py [--repetitions N] [--dry-run]
+
+Edit the CONFIG section below before running.
+"""
+
 import subprocess
+import time
+import os
+import argparse
+import logging
+from datetime import datetime
+from itertools import product
 
-# -----------------------
-# config
-# -----------------------
-CONFIG_FILE = "/etc/memcached.conf"
-RESULTS_DIR = "./results"
-CORES = [0, 1, 2]
+# ─────────────────────────────────────────────
+# CONFIG — edit these before running
+# ─────────────────────────────────────────────
 
-SSH_KEY = os.path.expanduser("~/.ssh/cloud-computing")
+SSH_KEY             = "~/.ssh/cloud-computing"
+SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-os.makedirs(RESULTS_DIR, exist_ok=True)
+MEMCACHED_IP        = "34.62.6.165"           # public IP of memcached host
+MEASURE_IP          = "35.187.46.174"            # public IP of measure host
 
-# -----------------------
-# machines
-# -----------------------
-memcached = RemoteHost(
-    "memcached",
-    "ubuntu",
-    external_ip="10.0.16.4",
-    internal_ip="10.0.16.4",
-    ssh_key=SSH_KEY,
-)
-
-measure = RemoteHost(
-    "measure",
-    "ubuntu",
-    external_ip="34.14.100.95",
-    internal_ip="34.14.100.95",
-    ssh_key=SSH_KEY,
-)
-
-agent = RemoteHost(
-    "agent",
-    "ubuntu",
-    external_ip="X.X.X.X",
-    internal_ip="X.X.X.X",
-    ssh_key=SSH_KEY,
-)
+INTERNAL_MEMCACHED_IP = "10.0.16.6"  # e.g. 10.0.0.2
+INTERNAL_AGENT_IP     = "10.0.16.5"      # e.g. 10.0.0.3
 
 
-# -----------------------
-# core runner
-# -----------------------
-def run(cmd, timeout=120):
-    return subprocess.run(
-        cmd,
-        shell=True,
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-    )
 
+# Thread counts to sweep
+THREAD_CONFIGS = [1, 2, 3]
 
-class RemoteHost:
-    def __init__(self, name, user, external_ip, internal_ip, ssh_key):
-        self.name = name
-        self.user = user
-        self.external_ip = external_ip
-        self.internal_ip = internal_ip
-        self.ssh_key = ssh_key
-
-    def _ssh_cmd(self, cmd, use_internal=False):
-        ip = self.internal_ip if use_internal else self.external_ip
-        return (
-            f"ssh -i {self.ssh_key} "
-            f"-o StrictHostKeyChecking=no "
-            f"{self.user}@{ip} "
-            f"bash -lc \"{cmd}\""
-        )
-
-    def run(self, cmd, use_internal=False):
-        full_cmd = self._ssh_cmd(cmd, use_internal)
-        print(f"[{self.name}] {cmd}")
-        return run(full_cmd)
-
-    def popen(self, cmd, use_internal=False):
-        full_cmd = self._ssh_cmd(cmd, use_internal)
-        print(f"[{self.name}] (async) {cmd}")
-        return subprocess.Popen(full_cmd, shell=True)
-
-# sanity check
-assert agent.external_ip != "X.X.X.X", "Agent external IP not set"
-
-
-# -----------------------
-# setup scripts
-# -----------------------
-SETUP_SCRIPTS = [
-    (memcached, "CCA-2026-Group-097/part4/tboschung/setup_cluster.sh"),
-    (measure,   "CCA-2026-Group-097/part4/tboschung/setup_mcperf_measure.sh"),
-    (agent,     "CCA-2026-Group-097/part4/tboschung/setup_mcperf_agent.sh"),
+# Core pinning configs (each entry is a list of core IDs)
+CORE_CONFIGS = [
+    # [0],
+    # [0, 1],
+    [0, 1, 2],
 ]
 
+# How many times to repeat each (threads, cores) combination
+REPETITIONS = 3
 
-def run_setup():
-    print("Running setup on all machines...\n")
+# mcperf benchmark parameters (adjust as needed)
+MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000"
 
-    procs = [
-        host.popen(f"bash {script}")
-        for host, script in SETUP_SCRIPTS
-    ]
+# Seconds to wait between repetitions (reduces thermal/load noise)
+SLEEP_BETWEEN_REPS = 5
 
-    for p in procs:
-        ret = p.wait()
-        if ret != 0:
-            raise RuntimeError(f"Setup failed with exit code {ret}")
+# ─────────────────────────────────────────────
+# LOGGING SETUP
+# ─────────────────────────────────────────────
 
-    print("\nSetup complete.\n")
+def setup_logging(log_dir: str) -> logging.Logger:
+    os.makedirs(log_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = os.path.join(log_dir, f"benchmark_{timestamp}.log")
+
+    logger = logging.getLogger("benchmark")
+    logger.setLevel(logging.DEBUG)
+
+    # File handler — full detail
+    fh = logging.FileHandler(log_file)
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+
+    # Console handler — info and above
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    logger.info(f"Logging to: {log_file}")
+    return logger, log_file
 
 
-# -----------------------
-# memcached control
-# -----------------------
-def set_threads(t):
-    memcached.run(
-        f"sudo sed -i 's/^-t .*/-t {t}/' {CONFIG_FILE} "
-        f"|| echo '-t {t}' | sudo tee -a {CONFIG_FILE}"
+# ─────────────────────────────────────────────
+# SSH HELPERS
+# ─────────────────────────────────────────────
+
+def ssh_cmd(host: str, remote_cmd: str, key: str = SSH_KEY, opts: str = SSH_OPTS) -> str:
+    """Build an SSH command string."""
+    return f'ssh -i {key} {opts} ubuntu@{host} "{remote_cmd}"'
+
+
+def run(cmd: str, logger: logging.Logger, dry_run: bool = False) -> tuple[int, str, str]:
+    """
+    Execute a shell command.
+    Returns (returncode, stdout, stderr).
+    """
+    logger.debug(f"CMD: {cmd}")
+    if dry_run:
+        logger.info("[DRY-RUN] Skipping execution.")
+        return 0, "[dry-run]", ""
+
+    result = subprocess.run(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
     )
-    memcached.run("sudo systemctl restart memcached")
-    time.sleep(2)
+    if result.stdout.strip():
+        logger.debug(f"STDOUT:\n{result.stdout.strip()}")
+    if result.stderr.strip():
+        logger.debug(f"STDERR:\n{result.stderr.strip()}")
+    if result.returncode != 0:
+        logger.error(f"  ✗ Command exited with code {result.returncode}: {cmd}")
+    return result.returncode, result.stdout.strip(), result.stderr.strip()
 
 
-def get_pid():
-    for _ in range(5):
-        result = memcached.run("pidof memcached")
-        pids = result.stdout.strip().split()
-        if pids:
-            return pids[0]
-        time.sleep(0.5)
-    raise RuntimeError("Could not find memcached PID")
+# ─────────────────────────────────────────────
+# BENCHMARK STEPS
+# ─────────────────────────────────────────────
 
+def set_threads_and_cores(
+    threads: int,
+    cores: list[int],
+    logger: logging.Logger,
+    dry_run: bool,
+) -> bool:
+    """
+    Configure memcached with:
+    - Correct thread count (-t)
+    - Enforced CPU affinity via systemd AllowedCPUs
+    - Verified affinity after restart
+    """
+    cores_str = ",".join(str(c) for c in cores)
 
-def set_cores(c):
-    pid = get_pid()
-    core_list = ",".join(map(str, CORES[:c]))
-    memcached.run(f"sudo taskset -cp {core_list} {pid}")
-
-
-# -----------------------
-# mcperf
-# -----------------------
-def warmup():
-    cmd = (
-        f"./mcperf -s {memcached.internal_ip} "
-        f"--noload -T 2 -C 2 -D 2 -Q 100 -c 2 -t 2 "
-        f"--scan 1000:5000:1000 > /dev/null"
+    # Step 1: update memcached thread config
+    update_threads_cmd = (
+        f"sudo sed -i 's/^-t .*/-t {threads}/' /etc/memcached.conf"
     )
-    measure.run(cmd, use_internal=True)
+    logger.info(f"  → Setting threads={threads} in config...")
+    rc, _, stderr = run(ssh_cmd(MEMCACHED_IP, update_threads_cmd), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Failed to update thread config: {stderr}")
+        return False
+
+    # Step 2: set CPU affinity at systemd level (PERSISTENT + RELIABLE)
+    set_cpu_cmd = f"sudo systemctl set-property memcached AllowedCPUs={cores_str}"
+    logger.info(f"  → Setting AllowedCPUs={cores_str}...")
+    rc, _, stderr = run(ssh_cmd(MEMCACHED_IP, set_cpu_cmd), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Failed to set AllowedCPUs: {stderr}")
+        return False
+
+    # Step 3: restart memcached cleanly
+    restart_cmd = "sudo systemctl restart memcached"
+    logger.info("  → Restarting memcached...")
+    rc, _, stderr = run(ssh_cmd(MEMCACHED_IP, restart_cmd), logger, dry_run)
+    if rc != 0:
+        logger.warning(f"  ⚠ Restart returned non-zero (may be OK): {stderr}")
+
+    # Step 4: wait for service
+    wait_secs = 4
+    logger.info(f"  → Waiting {wait_secs}s for memcached to start...")
+    if not dry_run:
+        time.sleep(wait_secs)
+
+    # Step 5: VERIFY affinity (this is critical)
+    verify_cmd = "taskset -cp \$(pgrep -o memcached)"
+    logger.info("  → Verifying CPU affinity...")
+    rc, stdout, stderr = run(ssh_cmd(MEMCACHED_IP, verify_cmd), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Failed to verify affinity: {stderr}")
+        return False
+
+    logger.info(f"  ✓ Affinity check: {stdout}")
+
+    target = "0-2" if cores_str == "0,1,2" else cores_str
+    if target not in stdout:
+        logger.error(f"  ✗ Affinity mismatch! Expected cores {cores_str}, got: {stdout}")
+        return False
+
+    logger.info(f"  ✓ memcached configured — threads={threads}, cores=[{cores_str}]")
+    return True
 
 
-def benchmark(output_file):
-    cmd = (
-        f"./mcperf -s {memcached.internal_ip} "
-        f"--noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 "
-        f"--scan 5000:125000:10000"
+def run_mcperf(
+    run_label: str,
+    result_dir: str,
+    logger: logging.Logger,
+    dry_run: bool,
+) -> bool:
+    """
+    Load data into memcached, then run the benchmark.
+    Output is saved to a per-run file in result_dir.
+    Returns True on success.
+    """
+    os.makedirs(result_dir, exist_ok=True)
+    out_file = os.path.join(result_dir, f"{run_label}.txt")
+
+    load_cmd_remote = (
+        f"cd ~/memcache-perf-dynamic && "
+        f"./mcperf -s {INTERNAL_MEMCACHED_IP} --loadonly"
     )
-    result = measure.run(cmd, use_internal=True)
+    bench_cmd_remote = (
+        f"cd ~/memcache-perf-dynamic && "
+        f"./mcperf -s {INTERNAL_MEMCACHED_IP} -a {INTERNAL_AGENT_IP} "
+        f"--noload {MCPERF_PARAMS}"
+    )
 
-    with open(output_file, "w") as f:
-        f.write(result.stdout)
+    # Step 1: load
+    logger.info(f"  → Loading data into memcached...")
+    rc, stdout, stderr = run(ssh_cmd(MEASURE_IP, load_cmd_remote), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Load step failed: {stderr}")
+        logger.error(f"  ✗ Failed command: {ssh_cmd(MEASURE_IP, load_cmd_remote)}")
+        return False
+
+    # Step 2: benchmark
+    logger.info(f"  → Running benchmark ({run_label})...")
+    rc, stdout, stderr = run(ssh_cmd(MEASURE_IP, bench_cmd_remote), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Benchmark failed: {stderr}")
+        logger.error(f"  ✗ Failed command: {ssh_cmd(MEASURE_IP, bench_cmd_remote)}")
+        return False
+
+    # Save raw output
+    with open(out_file, "w") as f:
+        f.write(f"# Run: {run_label}\n")
+        f.write(f"# Timestamp: {datetime.now().isoformat()}\n\n")
+        f.write(stdout)
+    logger.info(f"  ✓ Results saved → {out_file}")
+    return True
 
 
-# -----------------------
-# experiment
-# -----------------------
-def run_experiments():
-    for t, c in itertools.product([1, 2, 3], [1, 2, 3]):
-        for run_id in range(1, 4):
+# ─────────────────────────────────────────────
+# MAIN LOOP
+# ─────────────────────────────────────────────
 
-            print(f"\n=== Running T={t}, C={c}, run={run_id} ===")
+def main():
+    parser = argparse.ArgumentParser(description="Memcached benchmark automation")
+    parser.add_argument(
+        "--repetitions", type=int, default=REPETITIONS,
+        help=f"Repetitions per config (default: {REPETITIONS})"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Print commands without executing them"
+    )
+    args = parser.parse_args()
 
-            set_threads(t)
-            set_cores(c)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_dir    = f"logs/{timestamp}"
+    result_dir = f"results/{timestamp}"
 
-            warmup()
+    logger, log_file = setup_logging(log_dir)
 
-            outfile = f"{RESULTS_DIR}/T{t}_C{c}_run{run_id}.txt"
-            benchmark(outfile)
+    total_configs = len(THREAD_CONFIGS) * len(CORE_CONFIGS)
+    total_runs    = total_configs * args.repetitions
 
-            time.sleep(2)
+    logger.info("=" * 60)
+    logger.info("Memcached Benchmark Automation")
+    logger.info(f"  Thread configs : {THREAD_CONFIGS}")
+    logger.info(f"  Core configs   : {CORE_CONFIGS}")
+    logger.info(f"  Repetitions    : {args.repetitions}")
+    logger.info(f"  Total runs     : {total_runs}")
+    logger.info(f"  Dry run        : {args.dry_run}")
+    logger.info("=" * 60)
+
+    success_count = 0
+    failure_count = 0
+    run_index     = 0
+
+    for threads, cores in product(THREAD_CONFIGS, CORE_CONFIGS):
+        cores_label = "_".join(str(c) for c in cores)
+        config_label = f"t{threads}_c{cores_label}"
+
+        logger.info("")
+        logger.info(f"{'─'*60}")
+        logger.info(f"CONFIG: threads={threads}, cores={cores}  [{config_label}]")
+        logger.info(f"{'─'*60}")
+
+        # Configure memcached once per (threads, cores) pair
+        ok = set_threads_and_cores(threads, cores, logger, args.dry_run)
+        if not ok:
+            logger.error(f"Skipping all repetitions for {config_label} due to config failure.")
+            failure_count += args.repetitions
+            continue
+
+        for rep in range(1, args.repetitions + 1):
+            run_index += 1
+            run_label = f"{config_label}_rep{rep}"
+            logger.info(f"  [{run_index}/{total_runs}] Repetition {rep}/{args.repetitions} — {run_label}")
+
+            ok = run_mcperf(run_label, result_dir, logger, args.dry_run)
+            if ok:
+                success_count += 1
+            else:
+                failure_count += 1
+
+            if rep < args.repetitions:
+                logger.info(f"  Sleeping {SLEEP_BETWEEN_REPS}s before next repetition...")
+                if not args.dry_run:
+                    time.sleep(SLEEP_BETWEEN_REPS)
+
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info("DONE")
+    logger.info(f"  Successful runs : {success_count}/{total_runs}")
+    logger.info(f"  Failed runs     : {failure_count}/{total_runs}")
+    logger.info(f"  Results dir     : {result_dir}/")
+    logger.info(f"  Log file        : {log_file}")
+    logger.info("=" * 60)
 
 
-# -----------------------
-# main
-# -----------------------
 if __name__ == "__main__":
-    run_setup()
-    run_experiments()
+    main()

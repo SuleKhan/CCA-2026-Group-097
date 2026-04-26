@@ -1,0 +1,62 @@
+2026-04-26 21:27:57,494 [INFO] Logging to: logs/20260426_212757/benchmark_20260426_212757.log
+2026-04-26 21:27:57,494 [INFO] ============================================================
+2026-04-26 21:27:57,494 [INFO] Memcached Benchmark Automation
+2026-04-26 21:27:57,494 [INFO]   Thread configs : [1, 2, 4]
+2026-04-26 21:27:57,494 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-04-26 21:27:57,494 [INFO]   Repetitions    : 3
+2026-04-26 21:27:57,494 [INFO]   Total runs     : 27
+2026-04-26 21:27:57,494 [INFO]   Dry run        : False
+2026-04-26 21:27:57,494 [INFO] ============================================================
+2026-04-26 21:27:57,494 [INFO] 
+2026-04-26 21:27:57,494 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:27:57,494 [INFO] CONFIG: threads=1, cores=[0]  [t1_c0]
+2026-04-26 21:27:57,494 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:27:57,494 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0 $(pidof memcached)"
+2026-04-26 21:28:00,549 [DEBUG] STDERR:
+/bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:28:00,550 [ERROR] Failed to configure memcached (threads=1, cores=0): /bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:28:00,550 [ERROR] Skipping all repetitions for t1_c0 due to config failure.
+2026-04-26 21:28:00,550 [INFO] 
+2026-04-26 21:28:00,550 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:00,550 [INFO] CONFIG: threads=1, cores=[0, 1]  [t1_c0_1]
+2026-04-26 21:28:00,550 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:00,551 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0,1 $(pidof memcached)"
+2026-04-26 21:28:03,613 [DEBUG] STDERR:
+/bin/sh: pidof: command not found
+taskset: invalid PID argument: '0,1'
+2026-04-26 21:28:03,614 [ERROR] Failed to configure memcached (threads=1, cores=0,1): /bin/sh: pidof: command not found
+taskset: invalid PID argument: '0,1'
+2026-04-26 21:28:03,614 [ERROR] Skipping all repetitions for t1_c0_1 due to config failure.
+2026-04-26 21:28:03,614 [INFO] 
+2026-04-26 21:28:03,614 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:03,614 [INFO] CONFIG: threads=1, cores=[0, 1, 2]  [t1_c0_1_2]
+2026-04-26 21:28:03,614 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:03,614 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0,1,2 $(pidof memcached)"
+2026-04-26 21:28:06,762 [DEBUG] STDERR:
+/bin/sh: pidof: command not found
+taskset: invalid PID argument: '0,1,2'
+2026-04-26 21:28:06,763 [ERROR] Failed to configure memcached (threads=1, cores=0,1,2): /bin/sh: pidof: command not found
+taskset: invalid PID argument: '0,1,2'
+2026-04-26 21:28:06,763 [ERROR] Skipping all repetitions for t1_c0_1_2 due to config failure.
+2026-04-26 21:28:06,763 [INFO] 
+2026-04-26 21:28:06,763 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:06,764 [INFO] CONFIG: threads=2, cores=[0]  [t2_c0]
+2026-04-26 21:28:06,764 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:06,764 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 2/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0 $(pidof memcached)"
+2026-04-26 21:28:09,738 [DEBUG] STDERR:
+/bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:28:09,739 [ERROR] Failed to configure memcached (threads=2, cores=0): /bin/sh: pidof: command not found
+taskset: bad usage
+Try 'taskset --help' for more information.
+2026-04-26 21:28:09,739 [ERROR] Skipping all repetitions for t2_c0 due to config failure.
+2026-04-26 21:28:09,739 [INFO] 
+2026-04-26 21:28:09,739 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:09,739 [INFO] CONFIG: threads=2, cores=[0, 1]  [t2_c0_1]
+2026-04-26 21:28:09,739 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 21:28:09,739 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.173.49 "sudo sed -i 's/^-t .*/-t 2/' /etc/memcached.conf && sudo systemctl restart memcached && sleep 2 && sudo taskset -cp 0,1 $(pidof memcached)"

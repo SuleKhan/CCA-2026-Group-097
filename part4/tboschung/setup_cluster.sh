@@ -7,3 +7,5 @@ echo "Waiting for cluster to be ready"
 kops validate cluster --wait 10m
 echo "cluster is ready"
 kubectl get nodes -o wide
+
+# kops delete cluster --name part4.k8s.local --yes

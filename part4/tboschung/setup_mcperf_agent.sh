@@ -1,7 +1,8 @@
-#!/bin/zsh
-set -e  # Exit immediately if any command fails
+#!/bin/bash
 
 # ssh -o StrictHostKeyChecking=no -i ~/.ssh/cloud-computing ubuntu@
+
+set -e  # Exit immediately if any command fails
 
 echo "=== Updating package lists ==="
 sudo apt-get update
@@ -18,9 +19,8 @@ sudo apt-get update
 echo "=== Installing build dependencies for memcached ==="
 sudo apt-get build-dep -y memcached
 
-echo "=== Setting up memcache-perf-dynamic ==="
+echo "=== Cloning memcache-perf-dynamic repository ==="
 cd ~
-
 if [ -d "memcache-perf-dynamic/.git" ]; then
     echo "Repo exists, updating..."
     cd memcache-perf-dynamic
@@ -35,6 +35,4 @@ echo "=== Building memcache-perf-dynamic ==="
 make
 
 echo "✅ Setup and build completed successfully!"
-
-
-# ./mcperf -s 10.0.16.4 -a 10.0.16.6 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000
+./mcperf -T 8 -A

@@ -1,0 +1,143 @@
+2026-04-26 23:45:20,676 [INFO] Logging to: logs/20260426_234520/benchmark_20260426_234520.log
+2026-04-26 23:45:20,676 [INFO] ============================================================
+2026-04-26 23:45:20,676 [INFO] Memcached Benchmark Automation
+2026-04-26 23:45:20,677 [INFO]   Thread configs : [1, 2, 3]
+2026-04-26 23:45:20,677 [INFO]   Core configs   : [[0, 1, 2]]
+2026-04-26 23:45:20,677 [INFO]   Repetitions    : 3
+2026-04-26 23:45:20,677 [INFO]   Total runs     : 9
+2026-04-26 23:45:20,677 [INFO]   Dry run        : False
+2026-04-26 23:45:20,677 [INFO] ============================================================
+2026-04-26 23:45:20,677 [INFO] 
+2026-04-26 23:45:20,677 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 23:45:20,677 [INFO] CONFIG: threads=1, cores=[0, 1, 2]  [t1_c0_1_2]
+2026-04-26 23:45:20,677 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 23:45:20,677 [INFO]   → Setting threads=1 in config...
+2026-04-26 23:45:20,677 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo sed -i 's/^-t .*/-t 1/' /etc/memcached.conf"
+2026-04-26 23:45:21,390 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:21,390 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-04-26 23:45:21,390 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo systemctl set-property memcached AllowedCPUs=0,1,2"
+2026-04-26 23:45:21,847 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:21,847 [INFO]   → Restarting memcached...
+2026-04-26 23:45:21,847 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo systemctl restart memcached"
+2026-04-26 23:45:22,611 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:22,612 [INFO]   → Waiting 4s for memcached to start...
+2026-04-26 23:45:26,616 [INFO]   → Verifying CPU affinity...
+2026-04-26 23:45:26,616 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "taskset -cp \$(pgrep -o memcached)"
+2026-04-26 23:45:27,057 [DEBUG] STDOUT:
+pid 11738's current affinity list: 0-2
+2026-04-26 23:45:27,058 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:27,058 [INFO]   ✓ Affinity check: pid 11738's current affinity list: 0-2
+2026-04-26 23:45:27,058 [ERROR]   ✗ Affinity mismatch! Expected cores 0,1,2, got: pid 11738's current affinity list: 0-2
+2026-04-26 23:45:27,059 [ERROR] Skipping all repetitions for t1_c0_1_2 due to config failure.
+2026-04-26 23:45:27,059 [INFO] 
+2026-04-26 23:45:27,059 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 23:45:27,059 [INFO] CONFIG: threads=2, cores=[0, 1, 2]  [t2_c0_1_2]
+2026-04-26 23:45:27,059 [INFO] ────────────────────────────────────────────────────────────
+2026-04-26 23:45:27,059 [INFO]   → Setting threads=2 in config...
+2026-04-26 23:45:27,059 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo sed -i 's/^-t .*/-t 2/' /etc/memcached.conf"
+2026-04-26 23:45:27,481 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:27,481 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-04-26 23:45:27,481 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo systemctl set-property memcached AllowedCPUs=0,1,2"
+2026-04-26 23:45:27,959 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:27,960 [INFO]   → Restarting memcached...
+2026-04-26 23:45:27,960 [DEBUG] CMD: ssh -i ~/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.62.6.165 "sudo systemctl restart memcached"
+2026-04-26 23:45:28,738 [DEBUG] STDERR:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:6sKnAdn+RsnYicMInASNQ4zOOKvHFvbQ/h1Ln9Owtvs.
+Please contact your system administrator.
+Add correct host key in /Users/Tobias/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/Tobias/.ssh/known_hosts:69
+Password authentication is disabled to avoid man-in-the-middle attacks.
+Keyboard-interactive authentication is disabled to avoid man-in-the-middle attacks.
+UpdateHostkeys is disabled because the host key is not trusted.
+2026-04-26 23:45:28,739 [INFO]   → Waiting 4s for memcached to start...
