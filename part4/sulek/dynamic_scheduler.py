@@ -11,6 +11,7 @@ from scheduler_logger import SchedulerLogger, Job
 
 CHECK_INTERVAL = 5
 TOTAL_CORES = [0, 1, 2, 3]
+THREADS = 8
 
 # Get memcached PID
 MEMCACHED_PID = int(subprocess.getoutput("pidof memcached").split()[0])
@@ -95,7 +96,7 @@ def scheduler():
 
     # IMPORTANT: log memcached start
     memcached_cores = [0, 1]
-    logger.job_start(Job.MEMCACHED, memcached_cores, 2)
+    logger.job_start(Job.MEMCACHED, memcached_cores, THREADS)
 
     set_memcached_cores(memcached_cores)
 
@@ -132,7 +133,7 @@ def scheduler():
 
         if job_queue and len(running_jobs) < 2:
             job_enum, image = job_queue.pop(0)
-            container = start_job(job_enum, image, batch_cores, threads=2)
+            container = start_job(job_enum, image, batch_cores, threads=THREADS)
             running_jobs.append((container, job_enum))
 
         # =====================
