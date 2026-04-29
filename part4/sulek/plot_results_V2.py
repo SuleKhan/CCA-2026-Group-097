@@ -5,21 +5,38 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta, timezone
 import matplotlib.dates as mdates
+from matplotlib.gridspec import GridSpec
 
 # -----------------------------
 # FILE INPUTS
 # -----------------------------
+LOG_AGENT_FILE = "single_job_seq/test_agent_log.txt" 
 LOG_INTERVAL_FILE = "single_job_seq/test_measure_log.txt"
-LOG_SCHED_FILE = "single_job_seq/test_jobs_log.txt"
+LOG_SCHED_FILE = "single_job_seq/test_jobs_log.txt" 
 
 # -----------------------------
 # LOAD FILES
 # -----------------------------
+with open(LOG_AGENT_FILE, "r", encoding="utf-8", errors="ignore") as f:
+    log1 = f.read()
+
 with open(LOG_INTERVAL_FILE, "r", encoding="utf-8", errors="ignore") as f:
     log2 = f.read()
 
 with open(LOG_SCHED_FILE, "r", encoding="utf-8", errors="ignore") as f:
     log3 = f.read()
+
+
+# -----------------------------
+# PARSE OVERALL LATENCY LOG
+# -----------------------------
+overall_p95 = None
+
+for line in log1.splitlines():
+    if line.strip().startswith("read") and "avg" not in line:
+        nums = re.findall(r"[\d.]+", line)
+        if len(nums) >= 13:
+            overall_p95 = float(nums[11])  # p95 column
 
 # -----------------------------
 # PARSE INTERVAL LOG
@@ -104,6 +121,28 @@ jobs["memcached"] = {
 }
 
 # -----------------------------
+# TOTAL JOB RUNTIME
+# -----------------------------
+target_jobs = [
+    "barnes", "blackscholes", "canneal",
+    "freqmine", "radix", "streamcluster", "vips"
+]
+
+job_times = []
+
+for name in target_jobs:
+    if name in jobs and "end" in jobs[name]:
+        job_times.append(jobs[name]["start"])
+        job_times.append(jobs[name]["end"])
+
+if job_times:
+    total_start = min(job_times)
+    total_end = max(job_times)
+    total_runtime = (total_end - total_start).total_seconds()
+else:
+    total_runtime = None
+
+# -----------------------------
 # PLOTTING
 # -----------------------------
 all_times = []
@@ -120,7 +159,12 @@ for job in jobs.values():
 xmin = min(all_times)
 xmax = max(all_times)
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10), sharex=True)
+fig = plt.figure(figsize=(18, 10))
+gs = GridSpec(2, 2, width_ratios=[4, 1], height_ratios=[1, 1])
+
+ax1 = fig.add_subplot(gs[0, 0])
+ax2 = fig.add_subplot(gs[1, 0], sharex=ax1)
+ax_text = fig.add_subplot(gs[:, 1])  # right-side panel (spans both rows)
 ax1.set_xlim(xmin, xmax)
 ax2.set_xlim(xmin, xmax)
 
@@ -182,6 +226,36 @@ for job, info in jobs.items():
 ax2.set_title("Gantt Chart (Jobs per Core)")
 ax2.set_xlabel("Time")
 ax2.set_ylabel("Core")
+
+# -----------------------------
+# RIGHT-SIDE SUMMARY PANEL
+# -----------------------------
+ax_text.axis("off")  # no axes
+
+lines = []
+
+if overall_p95 is not None:
+    lines.append(f"Overall p95\n{overall_p95:.1f} ms")
+
+if total_runtime is not None:
+    lines.append(f"Total Runtime\n{total_runtime:.1f} s")
+
+summary_text = "\n\n".join(lines)
+
+ax_text.text(
+    0.5, 0.5,
+    summary_text,
+    ha="center",
+    va="center",
+    fontsize=16,
+    fontweight="bold",
+    bbox=dict(
+        boxstyle="round,pad=1.0",
+        facecolor="white",
+        edgecolor="black",
+        linewidth=2
+    )
+)
 
 plt.tight_layout()
 plt.show()
