@@ -15,7 +15,7 @@ TOTAL_CORES = [0, 1, 2, 3]
 MEMCACHED_CORES = [0]
 JOB_CORES = [1, 2]
 
-THREADS = 1
+THREADS = 8
 
 # Get memcached PID
 MEMCACHED_PID = int(subprocess.getoutput("pidof memcached").split()[0])
@@ -97,25 +97,71 @@ def get_cpu():
 # =========================
 
 def scheduler():
-
-    # Start memcached on 1 core
+    # -------------------------
+    # INIT MEMCACHED
+    # -------------------------
     logger.job_start(Job.MEMCACHED, [str(core) for core in MEMCACHED_CORES], THREADS)
     set_memcached_cores(MEMCACHED_CORES)
 
-    # Run jobs sequentially
-    for job_enum, image in JOB_MAP:
-        print(f"Starting job: {job_enum.value}")
+    # -------------------------
+    # TWO CORE WORKERS
+    # -------------------------
+    core_slots = {
+        1: None,  # core 1 container
+        2: None   # core 2 container
+    }
 
-        container = start_job(job_enum, image, [str(core) for core in JOB_CORES], threads=THREADS)
+    core_jobs = {
+        1: None,
+        2: None
+    }
 
-        # Wait until job finishes
-        while True:
+    job_queue = JOB_MAP.copy()
+
+    while job_queue or any(core_slots.values()):
+
+        # -------------------------
+        # ASSIGN NEW JOBS
+        # -------------------------
+        for core_id in [1, 2]:
+            if core_slots[core_id] is None and job_queue:
+
+                job_enum, image = job_queue.pop(0)
+
+                print(f"Assigning {job_enum.value} → core {core_id}")
+
+                container = start_job(
+                    job_enum,
+                    image,
+                    [core_id],   # IMPORTANT: single core
+                    threads=THREADS
+                )
+
+                core_slots[core_id] = container
+                core_jobs[core_id] = job_enum
+
+        # -------------------------
+        # CHECK COMPLETION
+        # -------------------------
+        for core_id in [1, 2]:
+            container = core_slots[core_id]
+
+            if container is None:
+                continue
+
             container.reload()
+
             if container.status == "exited":
+                job_enum = core_jobs[core_id]
+
                 logger.job_end(job_enum)
-                print(f"Finished job: {job_enum.value}")
-                break
-            time.sleep(2)
+
+                print(f"Finished {job_enum.value} on core {core_id}")
+
+                core_slots[core_id] = None
+                core_jobs[core_id] = None
+
+        time.sleep(2)
 
     logger.end()
 

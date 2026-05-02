@@ -10,9 +10,11 @@ from matplotlib.gridspec import GridSpec
 # -----------------------------
 # FILE INPUTS
 # -----------------------------
-LOG_AGENT_FILE = "single_job_seq/test_agent_log.txt" 
-LOG_INTERVAL_FILE = "single_job_seq/test_measure_log.txt"
-LOG_SCHED_FILE = "single_job_seq/test_jobs_log.txt" 
+POLICY_DIR = "single_job_seq"
+
+LOG_AGENT_FILE = f"{POLICY_DIR}/agent_log.txt" 
+LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
+LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt" 
 
 # -----------------------------
 # LOAD FILES
@@ -258,4 +260,11 @@ ax_text.text(
 )
 
 plt.tight_layout()
+
+# SAVE FIGURE
+output_file = f"{POLICY_DIR}/analysis_plot.png"
+plt.savefig(output_file, dpi=300, bbox_inches="tight")
+
+print(f"Plot saved to {output_file}")
+
 plt.show()

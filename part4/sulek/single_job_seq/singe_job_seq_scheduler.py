@@ -15,7 +15,7 @@ TOTAL_CORES = [0, 1, 2, 3]
 MEMCACHED_CORES = [0]
 JOB_CORES = [1]
 
-THREADS = 1
+THREADS = 8
 
 # Get memcached PID
 MEMCACHED_PID = int(subprocess.getoutput("pidof memcached").split()[0])

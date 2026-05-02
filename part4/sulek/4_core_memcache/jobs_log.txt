@@ -1,0 +1,4 @@
+2026-05-02T12:59:28.482423 start scheduler
+2026-05-02T12:59:28.482459 start memcached [0,1,2,3] 8
+2026-05-02T12:59:28.515953 update_cores memcached [0,1,2,3]
+2026-05-02T12:59:28.515974 end scheduler
