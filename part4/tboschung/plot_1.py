@@ -91,11 +91,19 @@ def collect_runs(results_dir: str) -> dict[str, list[list[dict]]]:
     return dict(runs)
 
 
-def average_runs(run_list: list[list[dict]]) -> tuple[np.ndarray, np.ndarray]:
+def average_runs(run_list: list[list[dict]]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     min_len = min(len(r) for r in run_list)
-    qps = np.mean([[r["qps"] for r in rep[:min_len]] for rep in run_list], axis=0)
-    p95 = np.mean([[r["p95"] for r in rep[:min_len]] for rep in run_list], axis=0)
-    return qps, p95
+
+    qps_arr = np.array([[r["qps"] for r in rep[:min_len]] for rep in run_list])
+    p95_arr = np.array([[r["p95"] for r in rep[:min_len]] for rep in run_list])
+
+    qps_mean = np.mean(qps_arr, axis=0)
+    p95_mean = np.mean(p95_arr, axis=0)
+
+    # variability across repetitions
+    p95_std = np.std(p95_arr, axis=0)
+
+    return qps_mean, p95_mean, p95_std
 
 
 def extract_thread_cores(config: str) -> tuple[int, int]:
@@ -120,22 +128,26 @@ def plot(runs: dict[str, list[list[dict]]], out_path: str):
     lines_meta = []  # (qps, p95, config, n_threads, n_cores) for label placement
 
     for config, rep_list in sorted(runs.items()):
-        qps, p95 = average_runs(rep_list)
+        qps, p95, p95_std = average_runs(rep_list)
         order     = np.argsort(qps)
-        qps, p95  = qps[order], p95[order]
+        qps, p95, p95_std = qps[order], p95[order], p95_std[order]
 
         n_threads, n_cores = extract_thread_cores(config)
         color  = THREAD_COLORS.get(n_threads, "#555555")
         lstyle = CORE_STYLES.get(n_cores,   (0, ()))
         marker = MARKERS.get(n_cores, "o")
 
-        ax.plot(
+        ax.errorbar(
             qps, p95,
+            yerr=p95_std,
             color=color,
             linestyle=lstyle,
             marker=marker,
             markersize=5,
             linewidth=2.2,
+            elinewidth=1.2,
+            capsize=3,
+            alpha=0.9,
             markevery=2,
             zorder=3,
         )

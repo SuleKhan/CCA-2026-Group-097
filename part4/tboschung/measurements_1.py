@@ -25,21 +25,19 @@ from itertools import product
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "34.62.6.165"           # public IP of memcached host
-MEASURE_IP          = "35.187.46.174"            # public IP of measure host
+MEMCACHED_IP        = "34.22.251.36"
+MEASURE_IP          = "34.78.200.123"
 
-INTERNAL_MEMCACHED_IP = "10.0.16.6"  # e.g. 10.0.0.2
-INTERNAL_AGENT_IP     = "10.0.16.5"      # e.g. 10.0.0.3
-
-
+INTERNAL_MEMCACHED_IP = "10.0.16.4"
+INTERNAL_AGENT_IP     = "10.0.16.3"
 
 # Thread counts to sweep
 THREAD_CONFIGS = [1, 2, 3]
 
 # Core pinning configs (each entry is a list of core IDs)
 CORE_CONFIGS = [
-    # [0],
-    # [0, 1],
+    [0],
+    [0, 1],
     [0, 1, 2],
 ]
 
@@ -86,8 +84,7 @@ def setup_logging(log_dir: str) -> logging.Logger:
 # ─────────────────────────────────────────────
 
 def ssh_cmd(host: str, remote_cmd: str, key: str = SSH_KEY, opts: str = SSH_OPTS) -> str:
-    """Build an SSH command string."""
-    return f'ssh -i {key} {opts} ubuntu@{host} "{remote_cmd}"'
+    return f"ssh -i {key} {opts} ubuntu@{host} '{remote_cmd}'"
 
 
 def run(cmd: str, logger: logging.Logger, dry_run: bool = False) -> tuple[int, str, str]:
@@ -136,7 +133,7 @@ def set_threads_and_cores(
 
     # Step 1: update memcached thread config
     update_threads_cmd = (
-        f"sudo sed -i 's/^-t .*/-t {threads}/' /etc/memcached.conf"
+        f"sudo sed -i -E \"s/^-t .*/-t {threads}/\" /etc/memcached.conf"
     )
     logger.info(f"  → Setting threads={threads} in config...")
     rc, _, stderr = run(ssh_cmd(MEMCACHED_IP, update_threads_cmd), logger, dry_run)
@@ -166,7 +163,7 @@ def set_threads_and_cores(
         time.sleep(wait_secs)
 
     # Step 5: VERIFY affinity (this is critical)
-    verify_cmd = "taskset -cp \$(pgrep -o memcached)"
+    verify_cmd = "taskset -cp $(pgrep -o memcached)"
     logger.info("  → Verifying CPU affinity...")
     rc, stdout, stderr = run(ssh_cmd(MEMCACHED_IP, verify_cmd), logger, dry_run)
     if rc != 0:

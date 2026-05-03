@@ -25,21 +25,19 @@ from itertools import product
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "35.240.38.150"           # public IP of memcached host
-MEASURE_IP          = "34.62.71.216"            # public IP of measure host
+MEMCACHED_IP        = "34.22.251.36"
+MEASURE_IP          = "34.78.200.123"
 
-INTERNAL_MEMCACHED_IP = "10.0.16.5"  # e.g. 10.0.0.2
-INTERNAL_AGENT_IP     = "10.0.16.4"      # e.g. 10.0.0.3
-
-
+INTERNAL_MEMCACHED_IP = "10.0.16.4"
+INTERNAL_AGENT_IP     = "10.0.16.3"
 
 # Thread counts to sweep
 THREAD_CONFIGS = [1, 2, 3]
 
 # Core pinning configs (each entry is a list of core IDs)
 CORE_CONFIGS = [
-    # [0],
-    # [0, 1],
+    [0],
+    [0, 1],
     [0, 1, 2],
 ]
 
