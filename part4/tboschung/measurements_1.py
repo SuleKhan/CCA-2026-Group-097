@@ -25,11 +25,11 @@ from itertools import product
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "34.22.251.36"
-MEASURE_IP          = "34.78.200.123"
+MEMCACHED_IP        = "34.78.123.59"
+MEASURE_IP          = "34.52.145.56"
 
-INTERNAL_MEMCACHED_IP = "10.0.16.4"
-INTERNAL_AGENT_IP     = "10.0.16.3"
+INTERNAL_MEMCACHED_IP = "10.0.16.5"
+INTERNAL_AGENT_IP     = "10.0.16.6"
 
 # Thread counts to sweep
 THREAD_CONFIGS = [1, 2, 3]
