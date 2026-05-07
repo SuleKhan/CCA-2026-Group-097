@@ -3,6 +3,7 @@ import psutil
 import subprocess
 import time
 
+from datetime import datetime
 from scheduler_logger import SchedulerLogger, Job
 
 # =========================
@@ -23,9 +24,16 @@ MEMCACHED_PID = int(subprocess.getoutput("pidof memcached").split()[0])
 client = docker.from_env()
 logger = SchedulerLogger()
 
+CPU_LOG_FILE = "cpu_usage.log"
+
 # =========================
 # MEMCACHED CONTROL
 # =========================
+
+def log_cpu(cpu_percent):
+    timestamp = datetime.now().isoformat()
+    with open(CPU_LOG_FILE, "a") as f:
+        f.write(f"{timestamp},{cpu_percent:.2f}\n")
 
 def set_memcached_cores(cores):
     core_str = ",".join(map(str, cores))
@@ -110,6 +118,8 @@ def scheduler():
 
         # Wait until job finishes
         while True:
+            cpu = psutil.cpu_percent(interval=None)
+            log_cpu(cpu)
             container.reload()
             if container.status == "exited":
                 logger.job_end(job_enum)
