@@ -35,4 +35,4 @@ echo "=== Building memcache-perf-dynamic ==="
 make
 
 echo "✅ Setup and build completed successfully!"
-./mcperf -T 8 -A
+# ./mcperf -T 8 -A
