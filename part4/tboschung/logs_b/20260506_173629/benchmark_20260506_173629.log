@@ -1,0 +1,434 @@
+2026-05-06 17:36:29,561 [INFO] Logging to: logs_b/20260506_173629/benchmark_20260506_173629.log
+2026-05-06 17:36:29,561 [INFO] ============================================================
+2026-05-06 17:36:29,561 [INFO] Memcached Benchmark Automation
+2026-05-06 17:36:29,561 [INFO]   Thread configs : [3]
+2026-05-06 17:36:29,561 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-05-06 17:36:29,561 [INFO]   Repetitions    : 3
+2026-05-06 17:36:29,561 [INFO]   Total runs     : 9
+2026-05-06 17:36:29,561 [INFO]   Dry run        : False
+2026-05-06 17:36:29,561 [INFO] ============================================================
+2026-05-06 17:36:29,561 [INFO] 
+2026-05-06 17:36:29,561 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:36:29,561 [INFO] CONFIG: threads=3, cores=[0]  [t3_c0]
+2026-05-06 17:36:29,561 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:36:29,561 [INFO]   → Setting threads=3 in config...
+2026-05-06 17:36:29,561 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-06 17:36:30,295 [INFO]   → Setting AllowedCPUs=0...
+2026-05-06 17:36:30,295 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl set-property memcached AllowedCPUs=0'
+2026-05-06 17:36:30,772 [INFO]   → Restarting memcached...
+2026-05-06 17:36:30,772 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl restart memcached'
+2026-05-06 17:36:32,166 [INFO]   → Waiting 4s for memcached to start...
+2026-05-06 17:36:36,166 [INFO]   → Verifying CPU affinity...
+2026-05-06 17:36:36,167 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'taskset -cp $(pgrep -o memcached)'
+2026-05-06 17:36:36,624 [DEBUG] STDOUT:
+pid 13878's current affinity list: 0
+2026-05-06 17:36:36,624 [INFO]   ✓ Affinity check: pid 13878's current affinity list: 0
+2026-05-06 17:36:36,624 [INFO]   ✓ memcached configured — threads=3, cores=[0]
+2026-05-06 17:36:36,624 [INFO]   [1/9] Repetition 1/3 — t3_c0_rep1
+2026-05-06 17:36:36,624 [INFO]   → Loading data into memcached...
+2026-05-06 17:36:36,624 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:36:40,472 [INFO]   → Running benchmark (t3_c0_rep1) with CPU monitoring...
+2026-05-06 17:36:40,473 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_rep1.csv ~/cpu_t3_c0_rep1.pid ~/cpu_logger_t3_c0_rep1.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_rep1.sh
+chmod +x ~/cpu_logger_t3_c0_rep1.sh
+nohup ~/cpu_logger_t3_c0_rep1.sh ~/cpu_t3_c0_rep1.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_rep1.pid
+'
+2026-05-06 17:36:40,920 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:37:30,535 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      250.4    86.0    93.8   162.6   177.9   242.9   268.4   282.8   293.4   307.0   323.5   355.2   433.2   972.3  3774.4   4927.0     5000  1778081802880  1778081805133
+read      282.2    94.2    86.8   156.3   176.7   278.6   313.2   332.5   345.9   363.8   386.0   421.2   501.9   650.5  3603.3  14927.5    15000  1778081806637  1778081808877
+read      304.8   110.3    86.8   150.8   170.5   303.0   349.0   372.9   390.7   410.2   434.6   470.5   547.7   883.1  2179.3  25021.5    25000  1778081810382  1778081812585
+read      309.6   118.7    80.4   139.8   158.1   303.2   362.2   393.7   415.0   437.8   467.6   509.9   602.7   737.3  1385.8  35042.0    35000  1778081814091  1778081816289
+read      309.2   133.4    74.4   133.3   150.7   295.2   364.0   399.2   423.2   449.8   481.7   532.2   644.4  1046.8  1976.4  45005.5    45000  1778081817794  1778081819992
+read      328.6   151.0    80.4   133.9   152.6   306.6   387.0   428.5   456.8   488.3   529.9   596.9   732.3   987.1  1886.2  54959.8    55000  1778081821496  1778081823697
+read      651.4   924.8    80.4   153.6   177.1   327.7   465.4   620.2   763.3   981.1  1401.5  2476.6  4963.0  7889.5  9494.0  64972.7    65000  1778081825201  1778081827398
+read      926.2  1725.7    80.4   168.4   192.3   303.9   360.9   403.6   451.9   590.2  3229.4  5860.2  7544.0  9277.7 10611.0  70358.0    75000  1778081828903  1778081831102
+read      988.4  1887.5    86.8   176.4   200.5   318.4   375.0   413.9   448.9   510.7  4429.1  6255.1  7561.2  9475.4 12567.5  69102.0    85000  1778081832606  1778081834806
+read      978.2  1910.8    86.8   173.5   194.3   320.0   372.5   404.7   433.6   483.0  4188.0  6272.3  7753.7 10088.9 13174.4  69995.5    95000  1778081836309  1778081838515
+read      968.6  1883.4    86.8   173.7   197.6   313.9   365.6   400.8   434.9   503.0  3591.5  6215.0  7798.6 11455.3 14813.4  70738.4   105000  1778081840019  1778081842219
+read     1006.4  1916.0    86.8   177.4   200.6   328.3   383.0   418.1   449.7   507.3  4848.8  6293.1  7655.7  9349.8 10571.6  68058.0   115000  1778081843724  1778081845923
+read      915.5  1812.5    86.8   168.1   191.9   296.4   343.5   374.7   403.1   457.4  3232.0  6176.0  7705.2  9440.5 12447.5  74581.0   125000  1778081847427  1778081849627
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 51.26%,2.51%,100.00%
+2026-05-06 17:37:30,536 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_rep1.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_rep1.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_rep1.pid
+fi
+'
+2026-05-06 17:37:31,330 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_rep1.csv results_b/20260506_173629/t3_c0_rep1_cpu.csv
+2026-05-06 17:37:31,949 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_rep1.txt
+2026-05-06 17:37:31,950 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_rep1_cpu.csv
+2026-05-06 17:37:31,950 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:37:36,955 [INFO]   [2/9] Repetition 2/3 — t3_c0_rep2
+2026-05-06 17:37:36,956 [INFO]   → Loading data into memcached...
+2026-05-06 17:37:36,956 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:37:40,671 [INFO]   → Running benchmark (t3_c0_rep2) with CPU monitoring...
+2026-05-06 17:37:40,672 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_rep2.csv ~/cpu_t3_c0_rep2.pid ~/cpu_logger_t3_c0_rep2.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_rep2.sh
+chmod +x ~/cpu_logger_t3_c0_rep2.sh
+nohup ~/cpu_logger_t3_c0_rep2.sh ~/cpu_t3_c0_rep2.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_rep2.pid
+'
+2026-05-06 17:37:41,128 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:38:30,643 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      236.4    92.0   101.3   152.4   165.8   227.8   251.6   265.7   274.9   288.7   306.6   337.6   433.9  1067.2  3775.6   4908.0     5000  1778081863077  1778081865338
+read      274.3    86.6    86.8   152.8   171.0   271.7   305.4   323.4   337.0   352.6   373.4   405.6   479.1   675.0  2200.9  14936.0    15000  1778081866842  1778081869079
+read      294.1   112.4    86.8   142.3   161.2   291.1   338.6   363.1   380.0   399.2   424.6   461.9   544.8   729.8  2372.7  25258.0    25000  1778081870583  1778081872784
+read      303.2   117.1    80.4   137.4   155.8   297.3   355.9   385.5   404.8   428.6   457.2   497.5   583.7   692.6  1387.2  34955.5    35000  1778081874288  1778081876485
+read      313.5   152.8    80.4   136.4   153.9   297.6   366.1   401.6   426.3   453.8   487.2   538.8   654.3  1184.0  3231.1  45204.5    45000  1778081877990  1778081880191
+read      319.7   147.2    74.4   131.3   149.4   298.8   376.2   416.9   444.8   475.0   512.1   577.3   699.3   911.0  2000.5  54808.5    55000  1778081881695  1778081883893
+read      441.3   321.7    80.4   144.7   166.8   344.9   479.2   564.8   626.9   705.3   810.6  1046.2  1615.0  2354.8  7187.3  65001.3    65000  1778081885396  1778081887592
+read      948.9  1782.6    80.4   172.0   194.2   312.1   368.8   406.2   441.6   522.4  3484.9  6096.6  7506.0  8799.0 10177.6  69883.6    75000  1778081889095  1778081891295
+read      977.8  1882.2    86.8   172.3   197.1   316.5   368.6   403.4   435.8   498.8  4230.1  6251.7  7664.7  9395.9 12046.9  69950.5    85000  1778081892798  1778081894999
+read      997.7  1911.3    86.8   177.6   200.3   324.8   380.6   416.7   448.2   505.5  4877.9  6270.3  7669.1  9438.2 12273.8  68555.0    95000  1778081896503  1778081898704
+read      994.3  1907.1    86.8   175.0   198.4   322.5   378.7   415.7   448.3   506.3  4452.4  6283.5  7652.0  9439.5 12243.2  68668.0   105000  1778081900207  1778081902407
+read      990.4  1892.7    80.4   175.3   198.5   324.5   377.6   412.3   442.1   498.8  4562.7  6262.9  7484.0  9318.4 12544.0  68863.9   115000  1778081903909  1778081906109
+read     1011.8  1917.5    86.8   178.2   203.8   327.1   381.7   419.1   453.8   515.8  4913.0  6288.1  7592.3  9357.0 12563.0  67944.1   125000  1778081907613  1778081909811
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 52.25%,4.50%,100.00%
+2026-05-06 17:38:30,644 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_rep2.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_rep2.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_rep2.pid
+fi
+'
+2026-05-06 17:38:31,178 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_rep2.csv results_b/20260506_173629/t3_c0_rep2_cpu.csv
+2026-05-06 17:38:32,130 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_rep2.txt
+2026-05-06 17:38:32,130 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_rep2_cpu.csv
+2026-05-06 17:38:32,131 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:38:37,132 [INFO]   [3/9] Repetition 3/3 — t3_c0_rep3
+2026-05-06 17:38:37,134 [INFO]   → Loading data into memcached...
+2026-05-06 17:38:37,134 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:38:40,680 [INFO]   → Running benchmark (t3_c0_rep3) with CPU monitoring...
+2026-05-06 17:38:40,680 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_rep3.csv ~/cpu_t3_c0_rep3.pid ~/cpu_logger_t3_c0_rep3.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_rep3.sh
+chmod +x ~/cpu_logger_t3_c0_rep3.sh
+nohup ~/cpu_logger_t3_c0_rep3.sh ~/cpu_t3_c0_rep3.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_rep3.pid
+'
+2026-05-06 17:38:41,211 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:39:30,756 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      233.0    59.5    93.8   149.2   162.6   227.1   252.2   267.1   277.3   290.8   307.7   335.2   411.0   551.2  1101.0   4967.0     5000  1778081923196  1778081925449
+read      267.0    81.6    93.8   149.2   167.2   263.8   297.0   315.3   328.7   343.8   365.5   398.7   471.1   584.4  1616.7  15008.0    15000  1778081926952  1778081929187
+read      289.6   102.6    86.8   141.6   159.9   286.6   332.7   356.9   373.6   394.0   419.1   456.9   537.9   814.3  1430.4  25033.5    25000  1778081930692  1778081932891
+read      303.6   140.4    80.4   137.0   154.6   296.5   354.3   384.8   405.0   429.0   457.6   498.4   594.8   742.7  6609.3  34966.5    35000  1778081934396  1778081936594
+read      315.6   150.1    80.4   133.9   152.7   301.8   369.6   404.5   429.0   456.7   490.6   542.6   650.7   921.0  4317.7  44778.5    45000  1778081938098  1778081940296
+read      334.1   156.7    80.4   136.6   155.3   309.2   391.6   434.6   463.5   496.6   541.6   613.7   766.7  1070.7  1716.8  55227.0    55000  1778081941800  1778081943998
+read      471.2   401.5    80.4   144.9   166.4   344.4   498.9   598.6   672.1   763.1   904.6  1174.1  1914.3  3435.0  7955.0  65124.5    65000  1778081945504  1778081947703
+read      851.0  1467.0    80.4   157.7   179.7   296.4   378.7   449.8   542.8  1302.2  2738.7  4793.7  6696.7  8589.6 10133.4  71255.0    75000  1778081949207  1778081951404
+read     1016.6  1935.6    80.4   178.1   201.2   333.6   390.7   426.7   458.3   515.3  4911.1  6303.0  7818.5  9416.3 10327.3  67282.8    85000  1778081952909  1778081955109
+read     1046.3  1949.8    86.8   186.5   209.4   340.0   404.8   445.8   480.2   545.4  5380.6  6337.1  7569.9  9338.1 10736.5  65261.7    95000  1778081956613  1778081958811
+read      874.3  1769.5    86.8   164.1   186.6   279.0   325.1   357.5   386.0   432.9  3086.7  6115.1  7545.4  9503.4 11888.2  78007.0   105000  1778081960315  1778081962512
+read     1028.4  1944.1    86.8   181.5   205.4   336.1   395.8   432.9   465.6   526.3  5206.2  6329.3  7732.8  9343.0 11652.9  66475.0   115000  1778081964016  1778081966214
+read     1010.3  1930.6    93.8   177.6   200.4   329.5   386.3   422.3   453.5   507.1  4922.8  6301.8  7612.2  9773.9 12902.0  67892.5   125000  1778081967719  1778081969918
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 53.48%,6.97%,100.00%
+2026-05-06 17:39:30,758 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_rep3.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_rep3.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_rep3.pid
+fi
+'
+2026-05-06 17:39:31,700 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_rep3.csv results_b/20260506_173629/t3_c0_rep3_cpu.csv
+2026-05-06 17:39:33,825 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_rep3.txt
+2026-05-06 17:39:33,825 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_rep3_cpu.csv
+2026-05-06 17:39:33,826 [INFO] 
+2026-05-06 17:39:33,826 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:39:33,826 [INFO] CONFIG: threads=3, cores=[0, 1]  [t3_c0_1]
+2026-05-06 17:39:33,826 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:39:33,826 [INFO]   → Setting threads=3 in config...
+2026-05-06 17:39:33,827 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-06 17:39:34,397 [INFO]   → Setting AllowedCPUs=0,1...
+2026-05-06 17:39:34,397 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl set-property memcached AllowedCPUs=0,1'
+2026-05-06 17:39:34,865 [INFO]   → Restarting memcached...
+2026-05-06 17:39:34,866 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl restart memcached'
+2026-05-06 17:39:35,449 [INFO]   → Waiting 4s for memcached to start...
+2026-05-06 17:39:39,450 [INFO]   → Verifying CPU affinity...
+2026-05-06 17:39:39,450 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'taskset -cp $(pgrep -o memcached)'
+2026-05-06 17:39:39,952 [DEBUG] STDOUT:
+pid 15360's current affinity list: 0,1
+2026-05-06 17:39:39,952 [INFO]   ✓ Affinity check: pid 15360's current affinity list: 0,1
+2026-05-06 17:39:39,952 [INFO]   ✓ memcached configured — threads=3, cores=[0,1]
+2026-05-06 17:39:39,952 [INFO]   [4/9] Repetition 1/3 — t3_c0_1_rep1
+2026-05-06 17:39:39,952 [INFO]   → Loading data into memcached...
+2026-05-06 17:39:39,953 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:39:43,498 [INFO]   → Running benchmark (t3_c0_1_rep1) with CPU monitoring...
+2026-05-06 17:39:43,500 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_rep1.csv ~/cpu_t3_c0_1_rep1.pid ~/cpu_logger_t3_c0_1_rep1.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_rep1.sh
+chmod +x ~/cpu_logger_t3_c0_1_rep1.sh
+nohup ~/cpu_logger_t3_c0_1_rep1.sh ~/cpu_t3_c0_1_rep1.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_rep1.pid
+'
+2026-05-06 17:39:43,973 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:40:33,596 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      235.7    90.8   101.3   154.8   168.2   227.3   249.7   263.4   273.1   285.7   301.0   331.1   414.4  1930.4  3233.9   4967.5     5000  1778081986048  1778081988299
+read      260.0    80.2    93.8   154.6   172.0   257.5   286.2   301.8   313.4   326.6   343.1   371.0   436.9   548.5  3110.7  15072.0    15000  1778081989803  1778081992042
+read      270.0    81.8    86.8   145.9   162.4   270.5   305.5   323.0   336.9   352.3   372.0   403.4   471.8   602.7  1170.8  25014.0    25000  1778081993546  1778081995744
+read      276.0   101.5    80.4   139.0   154.5   276.1   318.1   339.8   355.2   372.5   395.6   430.9   503.6   659.7  2287.7  35011.4    35000  1778081997249  1778081999446
+read      276.1   117.5    80.4   133.3   148.6   269.4   320.1   345.6   364.3   385.5   411.4   451.5   536.2   768.1  2633.4  45121.5    45000  1778082000950  1778082003148
+read      274.2   112.5    80.4   130.2   144.9   261.5   317.0   345.4   367.1   392.1   424.2   470.1   574.8   767.0  1673.2  55415.5    55000  1778082004652  1778082006850
+read      277.9   125.6    80.4   129.6   143.9   257.8   317.2   349.5   374.4   403.2   440.8   498.8   638.5   874.9  2037.4  64962.4    65000  1778082008354  1778082010553
+read      289.6   145.3    80.4   130.8   145.6   260.4   322.9   358.7   386.4   420.8   467.7   555.4   769.9  1132.3  1997.9  75162.0    75000  1778082012058  1778082014255
+read      310.6   181.8    80.4   137.5   152.8   267.1   330.6   371.2   405.8   454.3   521.8   643.6   937.1  1524.8  3253.3  85105.0    85000  1778082015758  1778082017960
+read      338.0   247.5    86.8   140.9   157.5   268.2   331.1   375.4   417.6   484.3   607.4   817.3  1310.2  2090.4  4753.2  94837.9    95000  1778082019464  1778082021661
+read      496.1   663.3    80.4   162.1   186.6   317.8   385.1   432.5   474.0   541.5   687.0  1866.8  3437.8  7400.5  8100.3 104658.7   105000  1778082023166  1778082025364
+read      549.0   797.9    86.8   176.3   204.1   341.1   407.7   454.7   495.9   554.8   660.7  2675.8  3708.7  7693.7 10106.1 112085.9   115000  1778082026868  1778082029066
+read      595.4   830.0    93.8   208.0   235.0   378.1   459.2   504.8   538.7   581.5   651.2  3250.2  3737.7  7725.2  8951.2 110125.1   125000  1778082030570  1778082032770
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 52.50%,5.00%,100.00%
+2026-05-06 17:40:33,597 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_rep1.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_rep1.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_rep1.pid
+fi
+'
+2026-05-06 17:40:34,340 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_rep1.csv results_b/20260506_173629/t3_c0_1_rep1_cpu.csv
+2026-05-06 17:40:34,992 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_rep1.txt
+2026-05-06 17:40:34,993 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_rep1_cpu.csv
+2026-05-06 17:40:34,993 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:40:39,996 [INFO]   [5/9] Repetition 2/3 — t3_c0_1_rep2
+2026-05-06 17:40:39,998 [INFO]   → Loading data into memcached...
+2026-05-06 17:40:39,998 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:40:43,559 [INFO]   → Running benchmark (t3_c0_1_rep2) with CPU monitoring...
+2026-05-06 17:40:43,559 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_rep2.csv ~/cpu_t3_c0_1_rep2.pid ~/cpu_logger_t3_c0_1_rep2.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_rep2.sh
+chmod +x ~/cpu_logger_t3_c0_1_rep2.sh
+nohup ~/cpu_logger_t3_c0_1_rep2.sh ~/cpu_t3_c0_1_rep2.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_rep2.pid
+'
+2026-05-06 17:40:44,046 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:41:33,598 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      233.8    69.5    93.8   153.4   166.3   226.9   250.1   263.9   273.4   287.0   304.5   336.1   405.5   511.2  2993.6   4981.5     5000  1778082046042  1778082048293
+read      261.1    93.4    86.8   154.9   172.9   257.6   286.1   301.1   312.9   326.4   344.2   374.5   446.9   596.9  4397.9  14975.0    15000  1778082049798  1778082052037
+read      270.0    85.9    86.8   145.8   162.2   270.2   305.1   322.8   336.5   351.9   372.3   403.4   469.4   574.5  1460.7  24920.0    25000  1778082053540  1778082055736
+read      274.7   104.4    80.4   138.8   154.4   272.8   316.3   338.5   354.1   371.6   395.0   428.9   499.8   691.1  2502.1  35106.5    35000  1778082057240  1778082059439
+read      275.1   105.0    80.4   133.9   149.5   268.5   318.4   344.5   363.7   385.3   411.7   453.4   533.4   677.6  1187.1  45149.5    45000  1778082060943  1778082063140
+read      276.7   112.9    80.4   130.1   145.0   266.2   321.1   350.5   370.8   394.7   424.8   468.9   566.1   736.1  1864.9  54810.5    55000  1778082064645  1778082066842
+read      280.2   143.8    80.4   130.2   144.7   261.8   320.5   352.4   375.6   402.9   438.9   494.7   628.6   899.8  3451.5  64558.0    65000  1778082068345  1778082070541
+read      290.2   142.1    86.8   132.9   148.1   263.2   325.4   361.6   388.8   422.8   469.1   548.2   711.5   924.3  3600.5  75175.2    75000  1778082072045  1778082074242
+read      304.6   171.9    80.4   134.8   150.3   262.3   325.5   366.5   400.4   448.5   519.4   641.9   867.1  1268.4  3490.3  85034.0    85000  1778082075745  1778082077946
+read      358.1   261.4    80.4   143.8   163.0   286.0   351.7   399.4   446.4   524.7   655.9   855.9  1337.9  2408.4  5138.9  94880.3    95000  1778082079449  1778082081648
+read      500.0   650.5    80.4   166.5   192.6   328.4   399.9   450.9   495.6   562.2   710.6  1772.3  3406.0  7318.1  8114.7 104919.3   105000  1778082083152  1778082085349
+read      566.8   804.4    93.8   194.3   221.3   359.5   433.6   476.7   508.8   550.2   625.0  2877.3  3702.7  7740.3  9002.3 111908.3   115000  1778082086854  1778082089052
+read      616.8   851.1    93.8   208.4   238.2   387.2   465.0   517.5   560.7   620.6   720.9  3275.4  3774.6  7797.2  9526.8 107149.0   125000  1778082090556  1778082092752
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 53.47%,6.93%,100.00%
+2026-05-06 17:41:33,599 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_rep2.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_rep2.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_rep2.pid
+fi
+'
+2026-05-06 17:41:34,079 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_rep2.csv results_b/20260506_173629/t3_c0_1_rep2_cpu.csv
+2026-05-06 17:41:34,974 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_rep2.txt
+2026-05-06 17:41:34,974 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_rep2_cpu.csv
+2026-05-06 17:41:34,974 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:41:39,979 [INFO]   [6/9] Repetition 3/3 — t3_c0_1_rep3
+2026-05-06 17:41:39,980 [INFO]   → Loading data into memcached...
+2026-05-06 17:41:39,980 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:41:43,450 [INFO]   → Running benchmark (t3_c0_1_rep3) with CPU monitoring...
+2026-05-06 17:41:43,451 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_rep3.csv ~/cpu_t3_c0_1_rep3.pid ~/cpu_logger_t3_c0_1_rep3.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_rep3.sh
+chmod +x ~/cpu_logger_t3_c0_1_rep3.sh
+nohup ~/cpu_logger_t3_c0_1_rep3.sh ~/cpu_t3_c0_1_rep3.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_rep3.pid
+'
+2026-05-06 17:41:43,914 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:42:33,540 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      238.8   151.3    93.8   155.0   169.3   230.1   253.2   266.8   275.6   289.2   306.3   335.9   408.6   706.9  7943.1   4878.5     5000  1778082105925  1778082108188
+read      267.0    96.2    93.8   158.9   177.3   263.4   292.6   308.7   319.3   334.3   352.4   382.5   451.4   733.6  3320.4  14882.5    15000  1778082109692  1778082111929
+read      276.4    92.6    86.8   148.8   166.2   275.9   311.9   330.7   343.5   360.4   380.7   411.3   480.1   672.8  2565.5  25028.5    25000  1778082113433  1778082115633
+read      282.5   138.4    80.4   139.4   156.1   277.8   321.6   344.3   361.5   380.5   403.4   438.4   527.1  1728.6  4204.0  34840.0    35000  1778082117137  1778082119339
+read      271.9   101.5    80.4   131.6   147.2   266.5   316.4   341.4   359.4   379.7   404.8   444.0   523.0   659.5  1100.4  45027.0    45000  1778082120845  1778082123045
+read      273.4   109.0    80.4   131.2   145.6   261.0   317.3   346.0   367.0   391.0   421.0   465.4   555.4   682.1   871.6  55296.0    55000  1778082124549  1778082126748
+read      282.7   135.9    80.4   130.7   145.7   266.2   324.4   355.4   377.8   404.0   440.1   495.5   625.9  1114.3  2771.1  65004.9    65000  1778082128254  1778082130455
+read      281.9   132.9    80.4   130.2   144.6   254.3   317.3   353.5   380.6   414.0   458.0   530.9   684.1   938.4  1720.5  74921.5    75000  1778082131959  1778082134158
+read      301.4   159.9    80.4   136.2   151.3   261.6   324.8   364.9   398.0   443.5   507.0   625.0   828.2  1197.1  1689.0  85414.0    85000  1778082135663  1778082137862
+read      344.8   275.9    80.4   140.6   157.7   272.3   335.3   379.5   421.2   485.2   601.7   819.3  1455.3  2691.0  7235.3  94656.0    95000  1778082139367  1778082141571
+read      467.0   610.9    86.8   157.3   179.7   308.0   373.9   422.5   466.0   538.0   700.6  1464.1  3369.8  7063.6  8130.9 104937.4   105000  1778082143076  1778082145275
+read      561.7   792.0    86.8   189.4   217.4   355.0   424.6   467.5   503.3   550.1   638.2  2759.9  3678.7  7711.5  9776.9 112094.4   115000  1778082146780  1778082148982
+read      610.0   856.0    93.8   210.7   239.7   386.1   468.2   516.4   551.4   596.0   678.3  3243.3  3903.4  7793.2  9323.9 108084.4   125000  1778082150486  1778082152685
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 51.00%,2.00%,100.00%
+2026-05-06 17:42:33,542 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_rep3.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_rep3.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_rep3.pid
+fi
+'
+2026-05-06 17:42:34,019 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_rep3.csv results_b/20260506_173629/t3_c0_1_rep3_cpu.csv
+2026-05-06 17:42:34,660 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_rep3.txt
+2026-05-06 17:42:34,660 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_rep3_cpu.csv
+2026-05-06 17:42:34,660 [INFO] 
+2026-05-06 17:42:34,660 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:42:34,660 [INFO] CONFIG: threads=3, cores=[0, 1, 2]  [t3_c0_1_2]
+2026-05-06 17:42:34,660 [INFO] ────────────────────────────────────────────────────────────
+2026-05-06 17:42:34,660 [INFO]   → Setting threads=3 in config...
+2026-05-06 17:42:34,660 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-06 17:42:35,475 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-05-06 17:42:35,475 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-06 17:42:35,932 [INFO]   → Restarting memcached...
+2026-05-06 17:42:35,932 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo systemctl restart memcached'
+2026-05-06 17:42:36,813 [INFO]   → Waiting 4s for memcached to start...
+2026-05-06 17:42:40,814 [INFO]   → Verifying CPU affinity...
+2026-05-06 17:42:40,815 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'taskset -cp $(pgrep -o memcached)'
+2026-05-06 17:42:41,331 [DEBUG] STDOUT:
+pid 16825's current affinity list: 0-2
+2026-05-06 17:42:41,331 [INFO]   ✓ Affinity check: pid 16825's current affinity list: 0-2
+2026-05-06 17:42:41,332 [INFO]   ✓ memcached configured — threads=3, cores=[0,1,2]
+2026-05-06 17:42:41,332 [INFO]   [7/9] Repetition 1/3 — t3_c0_1_2_rep1
+2026-05-06 17:42:41,332 [INFO]   → Loading data into memcached...
+2026-05-06 17:42:41,332 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:42:44,807 [INFO]   → Running benchmark (t3_c0_1_2_rep1) with CPU monitoring...
+2026-05-06 17:42:44,808 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_2_rep1.csv ~/cpu_t3_c0_1_2_rep1.pid ~/cpu_logger_t3_c0_1_2_rep1.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_2_rep1.sh
+chmod +x ~/cpu_logger_t3_c0_1_2_rep1.sh
+nohup ~/cpu_logger_t3_c0_1_2_rep1.sh ~/cpu_t3_c0_1_2_rep1.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep1.pid
+'
+2026-05-06 17:42:45,318 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:43:34,981 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      239.4   124.6   109.4   155.3   169.6   230.3   253.7   267.6   277.0   290.2   307.3   335.1   416.9  1876.4  4070.6   5034.0     5000  1778082167318  1778082169569
+read      261.7    75.8    93.8   155.1   175.5   259.1   287.7   303.2   314.6   328.0   344.1   372.6   435.5   541.8  2199.6  15021.0    15000  1778082171072  1778082173314
+read      267.0    81.2    93.8   147.2   163.9   267.1   301.0   318.4   331.5   345.4   365.4   395.0   457.6   546.9  1388.6  24891.5    25000  1778082174819  1778082177022
+read      267.7    87.4    86.8   139.7   155.1   268.7   307.7   326.9   340.6   357.0   376.2   407.7   478.5   582.1  1143.9  35060.0    35000  1778082178527  1778082180726
+read      270.6   110.6    80.4   136.2   151.4   267.6   313.9   335.8   350.6   368.2   390.9   424.8   497.1   764.0  2920.7  44871.7    45000  1778082182230  1778082184430
+read      261.6    97.6    80.4   131.8   145.6   253.5   306.0   330.2   346.3   365.7   389.5   424.5   495.4   598.4   945.7  54851.5    55000  1778082185935  1778082188132
+read      263.9   103.5    80.4   130.2   144.3   252.9   307.7   333.8   351.7   372.0   398.1   436.9   526.8   676.0  1493.6  65159.5    65000  1778082189637  1778082191839
+read      258.9    98.7    74.4   129.8   143.5   244.9   301.1   327.6   345.5   366.8   392.8   430.8   508.8   688.0  1156.1  74699.1    75000  1778082193343  1778082195541
+read      262.7   114.5    80.4   131.4   145.9   248.8   301.2   327.6   346.0   367.7   394.7   435.4   530.5   780.6  2895.3  84776.5    85000  1778082197045  1778082199245
+read      258.6   112.4    80.4   132.6   147.0   243.1   294.4   321.0   339.7   361.2   388.0   429.3   524.8   733.8  4194.6  95233.0    95000  1778082200748  1778082202948
+read      264.5   103.2    80.4   136.8   151.6   249.7   299.0   325.3   344.1   366.6   394.7   436.8   545.0   858.0  1531.0 105084.0   105000  1778082204452  1778082206650
+read      285.9   110.6    80.4   145.6   163.6   273.5   320.9   346.5   365.7   388.4   418.8   469.4   603.8   905.6  2075.9 115407.8   115000  1778082208154  1778082210352
+read      295.7   115.1    80.4   150.9   170.2   282.7   329.4   355.8   374.6   398.7   431.3   488.5   630.1   867.2  2307.8 125176.4   125000  1778082211855  1778082214056
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 52.25%,4.50%,100.00%
+2026-05-06 17:43:34,983 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_2_rep1.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_2_rep1.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_2_rep1.pid
+fi
+'
+2026-05-06 17:43:35,892 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_2_rep1.csv results_b/20260506_173629/t3_c0_1_2_rep1_cpu.csv
+2026-05-06 17:43:36,549 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_2_rep1.txt
+2026-05-06 17:43:36,550 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_2_rep1_cpu.csv
+2026-05-06 17:43:36,550 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:43:41,553 [INFO]   [8/9] Repetition 2/3 — t3_c0_1_2_rep2
+2026-05-06 17:43:41,554 [INFO]   → Loading data into memcached...
+2026-05-06 17:43:41,554 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:43:45,118 [INFO]   → Running benchmark (t3_c0_1_2_rep2) with CPU monitoring...
+2026-05-06 17:43:45,119 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_2_rep2.csv ~/cpu_t3_c0_1_2_rep2.pid ~/cpu_logger_t3_c0_1_2_rep2.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_2_rep2.sh
+chmod +x ~/cpu_logger_t3_c0_1_2_rep2.sh
+nohup ~/cpu_logger_t3_c0_1_2_rep2.sh ~/cpu_t3_c0_1_2_rep2.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep2.pid
+'
+2026-05-06 17:43:45,628 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:44:35,197 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      240.8    84.3   109.4   156.6   171.2   232.5   256.3   270.7   281.3   293.6   310.8   340.2   421.1  1511.1  2995.6   4941.5     5000  1778082227642  1778082229902
+read      264.2   117.4    93.8   155.2   173.9   258.5   287.1   303.3   315.1   329.6   347.2   377.6   452.3  1360.2  4975.0  15138.5    15000  1778082231406  1778082233641
+read      269.2    90.7    93.8   148.3   165.3   269.0   302.1   318.9   331.8   345.4   366.1   397.3   464.4   591.9  3152.8  24970.0    25000  1778082235146  1778082237346
+read      271.1    92.7    86.8   141.0   157.1   271.2   310.9   330.9   344.4   361.8   383.0   416.5   488.7   591.7  1885.1  35057.5    35000  1778082238850  1778082241050
+read      266.2    97.6    80.4   134.4   149.9   262.7   309.0   331.6   346.6   366.3   389.9   423.9   490.1   583.8  1586.2  45117.8    45000  1778082242553  1778082244750
+read      263.4    98.5    80.4   131.2   145.4   256.7   307.9   332.2   348.4   367.9   392.2   427.9   501.1   628.7  1535.6  55181.9    55000  1778082246254  1778082248451
+read      269.7   152.1    80.4   131.8   146.3   254.6   309.4   335.8   354.1   374.4   401.1   441.7   539.1  2116.1  6036.7  64904.0    65000  1778082249956  1778082252154
+read      261.3   109.4    80.4   130.5   144.7   246.2   301.6   329.2   347.7   369.7   397.1   435.8   520.1   703.5  3523.6  74698.2    75000  1778082253659  1778082255859
+read      264.7   117.0    86.8   132.2   146.6   247.5   301.7   329.9   349.4   372.3   400.5   445.9   560.5   941.4  3376.4  84901.5    85000  1778082257363  1778082259560
+read      261.4   115.2    86.8   134.0   148.5   244.6   295.8   322.7   342.1   364.6   392.7   434.9   542.4  1019.0  2358.2  94479.3    95000  1778082261064  1778082263261
+read      262.7   102.2    80.4   136.5   151.1   246.5   296.4   323.2   342.6   365.1   393.2   435.7   543.1   905.3  1512.1 105006.9   105000  1778082264765  1778082266964
+read      281.9   114.4    86.8   144.5   161.6   266.5   315.2   342.4   362.4   386.0   417.4   468.3   609.7   931.0  2275.5 114874.7   115000  1778082268468  1778082270673
+read      322.4   154.7    86.8   152.1   171.9   292.4   348.7   384.3   412.4   451.6   510.7   619.3   802.1  1078.3  3845.8 124971.9   125000  1778082272177  1778082274374
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 52.01%,4.02%,100.00%
+2026-05-06 17:44:35,198 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_2_rep2.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_2_rep2.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_2_rep2.pid
+fi
+'
+2026-05-06 17:44:35,669 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_2_rep2.csv results_b/20260506_173629/t3_c0_1_2_rep2_cpu.csv
+2026-05-06 17:44:36,654 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_2_rep2.txt
+2026-05-06 17:44:36,654 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_2_rep2_cpu.csv
+2026-05-06 17:44:36,654 [INFO]   Sleeping 5s before next repetition...
+2026-05-06 17:44:41,656 [INFO]   [9/9] Repetition 3/3 — t3_c0_1_2_rep3
+2026-05-06 17:44:41,657 [INFO]   → Loading data into memcached...
+2026-05-06 17:44:41,657 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-06 17:44:45,119 [INFO]   → Running benchmark (t3_c0_1_2_rep3) with CPU monitoring...
+2026-05-06 17:44:45,120 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+rm -f ~/cpu_t3_c0_1_2_rep3.csv ~/cpu_t3_c0_1_2_rep3.pid ~/cpu_logger_t3_c0_1_2_rep3.sh
+printf '"'"'%s'"'"' IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLXUKZXhwb3J0IExDX0FMTD1DCk9VVD0iJDEiCmVjaG8gJ2Vwb2NoX21zLGlzb190cyxob3N0LGNwdSx1c2VyLG5pY2Usc3lzdGVtLGlvd2FpdCxpcnEsc29mdCxzdGVhbCxndWVzdCxnbmljZSxpZGxlJyA+ICIkT1VUIgp3aGlsZSB0cnVlOyBkbwogIGVwb2NoX21zPSQoZGF0ZSArJXMlM04pCiAgaXNvX3RzPSQoZGF0ZSAtLWlzby04NjAxPW1pbGxpc2Vjb25kcykKICBob3N0PSQoaG9zdG5hbWUpCiAgbXBzdGF0IC1QIEFMTCAxIDEgfCBhd2sgLXYgZT0iJGVwb2NoX21zIiAtdiBpc289IiRpc29fdHMiIC12IGg9IiRob3N0IiAnCiAgICBCRUdJTiB7IE9GUz0iLCIgfQogICAgL15bMC05XS8gJiYgKCQyID09ICJhbGwiIHx8ICQyIH4gL15bMC05XSskLykgewogICAgICBwcmludCBlLCBpc28sIGgsICQyLCAkMywgJDQsICQ1LCAkNiwgJDcsICQ4LCAkOSwgJDEwLCAkMTEsICQxMgogICAgICBmZmx1c2goKQogICAgfQogICcKZG9uZQo= | base64 -d > ~/cpu_logger_t3_c0_1_2_rep3.sh
+chmod +x ~/cpu_logger_t3_c0_1_2_rep3.sh
+nohup ~/cpu_logger_t3_c0_1_2_rep3.sh ~/cpu_t3_c0_1_2_rep3.csv >/dev/null 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep3.pid
+'
+2026-05-06 17:44:45,584 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.76.45.59 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000'
+2026-05-06 17:45:35,165 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      236.8    79.6   109.4   154.4   168.2   230.7   253.7   267.6   276.9   289.1   304.7   333.1   399.5   808.9  4397.4   4999.5     5000  1778082287618  1778082289869
+read      264.5    88.4    86.8   156.4   175.4   261.1   289.6   305.1   316.1   330.4   347.9   376.7   448.4   864.5  2723.5  15058.5    15000  1778082291374  1778082293609
+read      271.0    80.6    86.8   147.9   164.9   271.5   305.5   323.1   337.0   352.6   372.3   401.7   466.1   586.4  1282.0  25243.5    25000  1778082295113  1778082297313
+read      272.8    93.0    86.8   141.0   157.2   272.9   313.7   334.2   348.0   365.6   387.1   420.0   489.0   587.0  1976.5  34998.5    35000  1778082298817  1778082301024
+read      265.3    94.7    86.8   134.9   149.5   263.9   308.0   328.9   343.0   361.0   383.5   419.1   495.6   605.5   831.3  44804.0    45000  1778082302527  1778082304729
+read      264.3    99.9    86.8   132.5   147.2   256.9   307.1   331.5   347.8   367.6   391.8   427.4   502.9   699.0  1729.3  54808.0    55000  1778082306233  1778082308432
+read      265.2   107.4    80.4   130.8   145.6   253.8   308.5   334.6   352.3   372.0   397.8   436.1   528.5   717.4  2700.0  65195.4    65000  1778082309936  1778082312136
+read      260.7   101.9    80.4   131.0   144.9   245.1   301.1   329.5   348.6   370.7   397.9   436.9   525.2   670.4  1035.0  75079.0    75000  1778082313639  1778082315841
+read      257.1   118.8    80.4   130.5   144.3   239.1   292.9   320.3   339.8   362.3   390.2   431.6   525.8   793.8  3980.3  85134.4    85000  1778082317344  1778082319543
+read      263.8   105.9    86.8   135.4   150.0   247.6   298.9   326.0   345.2   367.9   396.3   438.7   545.6   936.6  2159.0  95003.0    95000  1778082321047  1778082323245
+read      267.4   104.3    86.8   138.8   154.1   253.8   302.4   328.5   346.5   368.7   396.1   437.2   541.5   794.7  2354.9 105056.0   105000  1778082324748  1778082326950
+read      286.7   108.6    86.8   146.7   164.9   275.2   322.2   347.7   366.8   389.2   418.5   466.1   589.2   837.0  1924.0 114958.3   115000  1778082328453  1778082330653
+read      360.9   236.0    86.8   149.3   167.3   289.2   366.7   428.2   488.1   570.6   668.1   826.2  1133.9  1590.9  6399.3 118874.9   125000  1778082332157  1778082334358
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 51.97%,3.94%,100.00%
+2026-05-06 17:45:35,166 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 '
+if [ -f ~/cpu_t3_c0_1_2_rep3.pid ]; then
+  pid=$(cat ~/cpu_t3_c0_1_2_rep3.pid)
+  pkill -P "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
+  rm -f ~/cpu_t3_c0_1_2_rep3.pid
+fi
+'
+2026-05-06 17:45:35,630 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216:~/cpu_t3_c0_1_2_rep3.csv results_b/20260506_173629/t3_c0_1_2_rep3_cpu.csv
+2026-05-06 17:45:36,297 [INFO]   ✓ Results saved → results_b/20260506_173629/t3_c0_1_2_rep3.txt
+2026-05-06 17:45:36,297 [INFO]   ✓ CPU log saved → results_b/20260506_173629/t3_c0_1_2_rep3_cpu.csv
+2026-05-06 17:45:36,297 [INFO] 
+2026-05-06 17:45:36,298 [INFO] ============================================================
+2026-05-06 17:45:36,298 [INFO] DONE
+2026-05-06 17:45:36,298 [INFO]   Successful runs : 9/9
+2026-05-06 17:45:36,298 [INFO]   Failed runs     : 0/9
+2026-05-06 17:45:36,298 [INFO]   Results dir     : results_b/20260506_173629/
+2026-05-06 17:45:36,298 [INFO]   Log file        : logs_b/20260506_173629/benchmark_20260506_173629.log
+2026-05-06 17:45:36,298 [INFO] ============================================================

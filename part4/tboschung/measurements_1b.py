@@ -15,6 +15,7 @@ import time
 import os
 import argparse
 import logging
+import shlex
 from datetime import datetime
 from itertools import product
 
@@ -25,11 +26,11 @@ from itertools import product
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "34.78.123.59"
-MEASURE_IP          = "34.52.145.56"
+MEMCACHED_IP        = "35.233.95.216"
+MEASURE_IP          = "34.76.45.59"
 
-INTERNAL_MEMCACHED_IP = "10.0.16.5"
-INTERNAL_AGENT_IP     = "10.0.16.6"
+INTERNAL_MEMCACHED_IP = "10.0.16.4"
+INTERNAL_AGENT_IP     = "10.0.16.3"
 
 # Thread counts to sweep
 THREAD_CONFIGS = [3]
@@ -84,7 +85,9 @@ def setup_logging(log_dir: str) -> logging.Logger:
 # ─────────────────────────────────────────────
 
 def ssh_cmd(host: str, remote_cmd: str, key: str = SSH_KEY, opts: str = SSH_OPTS) -> str:
-    return f"ssh -i {key} {opts} ubuntu@{host} '{remote_cmd}'"
+    """Build an ssh command while safely quoting the remote command."""
+    key_path = os.path.expanduser(key)
+    return f"ssh -i {shlex.quote(key_path)} {opts} ubuntu@{host} {shlex.quote(remote_cmd)}"
 
 
 def run(cmd: str, logger: logging.Logger, dry_run: bool = False) -> tuple[int, str, str]:
@@ -214,32 +217,85 @@ def run_mcperf(
         return False
     
     # Step 2: benchmark WITH CPU monitoring
-    logger.info(f"  → Running benchmark ({run_label}) with CPU monitoring...")
+    logger.info(f"  → Running benchmark ({run_label}) with raw /proc/stat CPU scraping...")
 
-    # Start CPU logging on MEMCACHED server
-    start_cpu_cmd = "nohup mpstat 1 > ~/cpu.log 2>&1 &"
-    run(ssh_cmd(MEMCACHED_IP, start_cpu_cmd), logger, dry_run)
+    # Start raw CPU logging on the MEMCACHED server.
+    # Each sample has an absolute epoch-ms timestamp followed by raw /proc/stat
+    # cpuN lines. The plotter computes utilization from counter deltas, so this
+    # avoids fragile mpstat parsing and locale/AM-PM output issues.
+    cpu_remote_file = f"~/cpu_{run_label}.txt"
+    cpu_pid_file = f"~/cpu_{run_label}.pid"
+    cpu_remote_script = f"~/cpu_logger_{run_label}.sh"
 
-    # Run benchmark from MEASURE node
+    cpu_logger_script = """#!/usr/bin/env bash
+                            set -u
+                            OUT=\"$1\"
+                            : > \"$OUT\"
+                            while true; do
+                            epoch_ms=$(date +%s%3N)
+                            iso_ts=$(date --iso-8601=milliseconds)
+                            host=$(hostname)
+                            echo \"# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}\" >> \"$OUT\"
+                            grep -E '^cpu[0-9]+ ' /proc/stat >> \"$OUT\"
+                            echo >> \"$OUT\"
+                            sleep 0.2
+                            done
+                            """
+
+    create_cpu_logger_cmd = (
+        f"cat > {cpu_remote_script} <<'CPU_LOGGER_EOF'\n"
+        f"{cpu_logger_script}"
+        f"CPU_LOGGER_EOF\n"
+        f"chmod +x {cpu_remote_script}\n"
+        f"nohup bash {cpu_remote_script} {cpu_remote_file} >/tmp/cpu_logger_{run_label}.out 2>&1 &\n"
+        f"echo $! > {cpu_pid_file}\n"
+    )
+    rc, _, stderr = run(ssh_cmd(MEMCACHED_IP, create_cpu_logger_cmd), logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Failed to start CPU logger: {stderr}")
+        return False
+
+    # Give the logger a moment to write the first sample before mcperf starts.
+    if not dry_run:
+        time.sleep(1)
+
+    # Run benchmark from MEASURE node.
     rc, stdout, stderr = run(ssh_cmd(MEASURE_IP, bench_cmd_remote), logger, dry_run)
+
+    # Stop CPU logging even if the benchmark fails.
+    stop_cpu_cmd = (
+        f"if [ -f {cpu_pid_file} ]; then "
+        f"kill $(cat {cpu_pid_file}) 2>/dev/null || true; "
+        f"rm -f {cpu_pid_file}; "
+        f"fi"
+    )
+    run(ssh_cmd(MEMCACHED_IP, stop_cpu_cmd), logger, dry_run)
 
     if rc != 0:
         logger.error(f"  ✗ Benchmark failed: {stderr}")
         return False
 
-    # Stop CPU logging
-    stop_cpu_cmd = "pkill -f mpstat"
-    run(ssh_cmd(MEMCACHED_IP, stop_cpu_cmd), logger, dry_run)
-
-    # Save raw output
+    # Save raw mcperf output.
     with open(out_file, "w") as f:
         f.write(f"# Run: {run_label}\n")
         f.write(f"# Timestamp: {datetime.now().isoformat()}\n\n")
         f.write(stdout)
     logger.info(f"  ✓ Results saved → {out_file}")
 
-    cpu_fetch_cmd = f"scp -i {SSH_KEY} ubuntu@{MEMCACHED_IP}:~/memcache-perf-dynamic/cpu.log {result_dir}/{run_label}_cpu.log"
-    run(cpu_fetch_cmd, logger, dry_run)
+    # Fetch raw CPU scrape. This must match cpu_remote_file above.
+    key_path = os.path.expanduser(SSH_KEY)
+    local_cpu_file = os.path.join(result_dir, f"{run_label}_cpu.txt")
+    cpu_fetch_cmd = (
+        f"scp -i {shlex.quote(key_path)} {SSH_OPTS} "
+        f"ubuntu@{MEMCACHED_IP}:{shlex.quote(cpu_remote_file)} "
+        f"{shlex.quote(local_cpu_file)}"
+    )
+    rc, _, stderr = run(cpu_fetch_cmd, logger, dry_run)
+    if rc != 0:
+        logger.error(f"  ✗ Failed to fetch CPU log: {stderr}")
+        return False
+
+    logger.info(f"  ✓ CPU scrape saved → {local_cpu_file}")
 
     return True
 
@@ -260,8 +316,8 @@ def main():
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir    = f"logs/{timestamp}"
-    result_dir = f"results/{timestamp}"
+    log_dir    = f"logs_b/{timestamp}"
+    result_dir = f"results_b/{timestamp}"
 
     logger, log_file = setup_logging(log_dir)
 
