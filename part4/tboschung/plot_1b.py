@@ -200,6 +200,7 @@ def make_plots(summary: pd.DataFrame, out_dir: Path) -> None:
 
         ax1.set_title(f"Memcached performance, C = {c_count}")
         ax1.set_xlabel("Achieved QPS")
+
         ax1.set_xlim(0, 125000)
         ax1.set_ylabel("95th percentile latency (ms)")
         ax2.set_ylabel("CPU utilization (%)")

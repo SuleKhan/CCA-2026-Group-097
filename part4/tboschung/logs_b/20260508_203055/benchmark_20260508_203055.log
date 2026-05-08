@@ -1,0 +1,165 @@
+2026-05-08 20:30:55,082 [INFO] Logging to: logs_b/20260508_203055/benchmark_20260508_203055.log
+2026-05-08 20:30:55,082 [INFO] ============================================================
+2026-05-08 20:30:55,082 [INFO] Memcached Benchmark Automation
+2026-05-08 20:30:55,082 [INFO]   Thread configs : [3]
+2026-05-08 20:30:55,082 [INFO]   Core configs   : [[0, 1, 2]]
+2026-05-08 20:30:55,082 [INFO]   Repetitions    : 3
+2026-05-08 20:30:55,082 [INFO]   Total runs     : 3
+2026-05-08 20:30:55,082 [INFO]   Dry run        : False
+2026-05-08 20:30:55,082 [INFO] ============================================================
+2026-05-08 20:30:55,082 [INFO] 
+2026-05-08 20:30:55,082 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 20:30:55,082 [INFO] CONFIG: threads=3, cores=[0, 1, 2]  [t3_c0_1_2]
+2026-05-08 20:30:55,082 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 20:30:55,082 [INFO]   → Setting threads=3 in config...
+2026-05-08 20:30:55,082 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 20:30:55,846 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-05-08 20:30:55,846 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-08 20:30:56,368 [INFO]   → Restarting memcached...
+2026-05-08 20:30:56,368 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl restart memcached'
+2026-05-08 20:30:57,243 [INFO]   → Waiting 4s for memcached to start...
+2026-05-08 20:31:01,249 [INFO]   → Verifying CPU affinity...
+2026-05-08 20:31:01,250 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'taskset -cp $(pgrep -o memcached)'
+2026-05-08 20:31:01,948 [DEBUG] STDOUT:
+pid 24661's current affinity list: 0-2
+2026-05-08 20:31:01,948 [INFO]   ✓ Affinity check: pid 24661's current affinity list: 0-2
+2026-05-08 20:31:01,949 [INFO]   ✓ memcached configured — threads=3, cores=[0,1,2]
+2026-05-08 20:31:01,949 [INFO]   [1/3] Repetition 1/3 — t3_c0_1_2_rep1
+2026-05-08 20:31:01,949 [INFO]   → Loading data into memcached...
+2026-05-08 20:31:01,949 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-08 20:31:05,744 [INFO]   → Running benchmark (t3_c0_1_2_rep1) with raw /proc/stat CPU scraping...
+2026-05-08 20:31:05,746 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'cat > ~/cpu_logger_t3_c0_1_2_rep1.sh <<'"'"'CPU_LOGGER_EOF'"'"'
+#!/usr/bin/env bash
+                            set -u
+                            OUT="$1"
+                            : > "$OUT"
+                            while true; do
+                            epoch_ms=$(date +%s%3N)
+                            iso_ts=$(date --iso-8601=milliseconds)
+                            host=$(hostname)
+                            echo "# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}" >> "$OUT"
+                            grep -E '"'"'^cpu[0-9]+ '"'"' /proc/stat >> "$OUT"
+                            echo >> "$OUT"
+                            sleep 0.2
+                            done
+                            CPU_LOGGER_EOF
+chmod +x ~/cpu_logger_t3_c0_1_2_rep1.sh
+nohup bash ~/cpu_logger_t3_c0_1_2_rep1.sh ~/cpu_t3_c0_1_2_rep1.txt >/tmp/cpu_logger_t3_c0_1_2_rep1.out 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep1.pid
+'
+2026-05-08 20:31:06,168 [DEBUG] STDERR:
+bash: line 18: warning: here-document at line 1 delimited by end-of-file (wanted `CPU_LOGGER_EOF')
+2026-05-08 20:31:07,173 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 100000:125000:5000'
+2026-05-08 20:31:48,652 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      253.5   105.4    74.4   125.2   139.7   238.2   289.1   315.5   334.6   356.7   384.6   429.5   547.0   784.3  1733.1  99822.5   100000  1778265069170  1778265074427
+read      253.8   109.3    74.4   124.5   139.4   237.4   287.0   313.3   332.4   354.8   384.4   431.9   571.1   931.7  2027.5 104859.1   105000  1778265075932  1778265081179
+read      269.1   120.3    74.4   129.1   144.6   250.6   302.6   330.8   351.1   375.6   410.2   472.7   638.9   987.1  1643.8 110420.9   110000  1778265082683  1778265087885
+read      270.6   131.2    80.4   132.1   148.7   254.5   304.0   330.7   349.5   372.2   402.8   458.4   618.7  1007.0  4313.5 114645.4   115000  1778265089388  1778265094591
+read      275.4   117.5    74.4   135.1   152.2   260.2   308.4   334.9   354.4   378.0   411.2   469.6   625.9   967.3  2596.5 120116.4   120000  1778265096096  1778265101296
+read      295.8   139.8    74.4   139.5   157.6   272.6   326.6   358.3   382.3   413.3   459.2   539.3   718.1  1095.9  2825.1 124694.2   125000  1778265102801  1778265108005
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 87.35%,58.29%,100.00%
+2026-05-08 20:31:48,654 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'if [ -f ~/cpu_t3_c0_1_2_rep1.pid ]; then kill $(cat ~/cpu_t3_c0_1_2_rep1.pid) 2>/dev/null || true; rm -f ~/cpu_t3_c0_1_2_rep1.pid; fi'
+2026-05-08 20:31:49,104 [INFO]   ✓ Results saved → results_b/20260508_203055/t3_c0_1_2_rep1.txt
+2026-05-08 20:31:49,104 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep1.txt' results_b/20260508_203055/t3_c0_1_2_rep1_cpu.txt
+2026-05-08 20:31:49,727 [DEBUG] STDERR:
+scp: ~/cpu_t3_c0_1_2_rep1.txt: No such file or directory
+2026-05-08 20:31:49,728 [ERROR]   ✗ Command exited with code 1: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep1.txt' results_b/20260508_203055/t3_c0_1_2_rep1_cpu.txt
+2026-05-08 20:31:49,728 [ERROR]   ✗ Failed to fetch CPU log: scp: ~/cpu_t3_c0_1_2_rep1.txt: No such file or directory
+2026-05-08 20:31:49,728 [INFO]   Sleeping 5s before next repetition...
+2026-05-08 20:31:54,729 [INFO]   [2/3] Repetition 2/3 — t3_c0_1_2_rep2
+2026-05-08 20:31:54,730 [INFO]   → Loading data into memcached...
+2026-05-08 20:31:54,730 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-08 20:31:58,229 [INFO]   → Running benchmark (t3_c0_1_2_rep2) with raw /proc/stat CPU scraping...
+2026-05-08 20:31:58,230 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'cat > ~/cpu_logger_t3_c0_1_2_rep2.sh <<'"'"'CPU_LOGGER_EOF'"'"'
+#!/usr/bin/env bash
+                            set -u
+                            OUT="$1"
+                            : > "$OUT"
+                            while true; do
+                            epoch_ms=$(date +%s%3N)
+                            iso_ts=$(date --iso-8601=milliseconds)
+                            host=$(hostname)
+                            echo "# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}" >> "$OUT"
+                            grep -E '"'"'^cpu[0-9]+ '"'"' /proc/stat >> "$OUT"
+                            echo >> "$OUT"
+                            sleep 0.2
+                            done
+                            CPU_LOGGER_EOF
+chmod +x ~/cpu_logger_t3_c0_1_2_rep2.sh
+nohup bash ~/cpu_logger_t3_c0_1_2_rep2.sh ~/cpu_t3_c0_1_2_rep2.txt >/tmp/cpu_logger_t3_c0_1_2_rep2.out 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep2.pid
+'
+2026-05-08 20:31:59,125 [DEBUG] STDERR:
+bash: line 18: warning: here-document at line 1 delimited by end-of-file (wanted `CPU_LOGGER_EOF')
+2026-05-08 20:32:00,128 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 100000:125000:5000'
+2026-05-08 20:32:41,861 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      252.1   111.4    68.9   124.0   138.9   235.5   284.7   311.1   330.2   352.5   381.9   430.2   565.8   877.3  2006.8  99975.2   100000  1778265122318  1778265127575
+read      264.4   116.3    74.4   127.2   142.5   247.4   299.2   326.9   346.2   370.1   401.4   457.7   617.3   950.7  1820.0 104996.5   105000  1778265129080  1778265134319
+read      285.6   158.2    74.4   128.1   143.5   252.3   311.2   345.1   371.6   405.7   460.4   567.6   810.4  1328.3  2993.5 109939.6   110000  1778265135823  1778265141024
+read      268.6   125.1    74.4   131.9   148.2   252.7   300.6   327.0   345.5   368.6   398.9   452.2   625.0  1149.6  3128.5 115044.3   115000  1778265142529  1778265147731
+read      283.9   125.0    74.4   138.6   156.7   270.2   317.4   343.2   362.9   386.8   420.4   480.5   637.6   985.0  2332.3 119976.5   120000  1778265149235  1778265154439
+read      274.1   120.8    74.4   135.0   151.9   257.2   306.1   333.1   352.8   376.7   410.3   468.6   627.1  1012.9  2864.5 124820.0   125000  1778265155944  1778265161146
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 87.45%,58.29%,100.00%
+2026-05-08 20:32:41,862 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'if [ -f ~/cpu_t3_c0_1_2_rep2.pid ]; then kill $(cat ~/cpu_t3_c0_1_2_rep2.pid) 2>/dev/null || true; rm -f ~/cpu_t3_c0_1_2_rep2.pid; fi'
+2026-05-08 20:32:42,319 [INFO]   ✓ Results saved → results_b/20260508_203055/t3_c0_1_2_rep2.txt
+2026-05-08 20:32:42,319 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep2.txt' results_b/20260508_203055/t3_c0_1_2_rep2_cpu.txt
+2026-05-08 20:32:42,910 [DEBUG] STDERR:
+scp: ~/cpu_t3_c0_1_2_rep2.txt: No such file or directory
+2026-05-08 20:32:42,911 [ERROR]   ✗ Command exited with code 1: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep2.txt' results_b/20260508_203055/t3_c0_1_2_rep2_cpu.txt
+2026-05-08 20:32:42,911 [ERROR]   ✗ Failed to fetch CPU log: scp: ~/cpu_t3_c0_1_2_rep2.txt: No such file or directory
+2026-05-08 20:32:42,911 [INFO]   Sleeping 5s before next repetition...
+2026-05-08 20:32:47,912 [INFO]   [3/3] Repetition 3/3 — t3_c0_1_2_rep3
+2026-05-08 20:32:47,915 [INFO]   → Loading data into memcached...
+2026-05-08 20:32:47,915 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-08 20:32:51,395 [INFO]   → Running benchmark (t3_c0_1_2_rep3) with raw /proc/stat CPU scraping...
+2026-05-08 20:32:51,395 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'cat > ~/cpu_logger_t3_c0_1_2_rep3.sh <<'"'"'CPU_LOGGER_EOF'"'"'
+#!/usr/bin/env bash
+                            set -u
+                            OUT="$1"
+                            : > "$OUT"
+                            while true; do
+                            epoch_ms=$(date +%s%3N)
+                            iso_ts=$(date --iso-8601=milliseconds)
+                            host=$(hostname)
+                            echo "# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}" >> "$OUT"
+                            grep -E '"'"'^cpu[0-9]+ '"'"' /proc/stat >> "$OUT"
+                            echo >> "$OUT"
+                            sleep 0.2
+                            done
+                            CPU_LOGGER_EOF
+chmod +x ~/cpu_logger_t3_c0_1_2_rep3.sh
+nohup bash ~/cpu_logger_t3_c0_1_2_rep3.sh ~/cpu_t3_c0_1_2_rep3.txt >/tmp/cpu_logger_t3_c0_1_2_rep3.out 2>&1 &
+echo $! > ~/cpu_t3_c0_1_2_rep3.pid
+'
+2026-05-08 20:32:51,856 [DEBUG] STDERR:
+bash: line 18: warning: here-document at line 1 delimited by end-of-file (wanted `CPU_LOGGER_EOF')
+2026-05-08 20:32:52,861 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 100000:125000:5000'
+2026-05-08 20:33:34,440 [DEBUG] STDOUT:
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999      QPS   target       ts_start         ts_end
+read      249.0   102.4    74.4   122.9   137.1   232.9   284.2   310.8   329.5   351.0   378.8   424.8   543.9   770.1  1733.6 100098.2   100000  1778265174962  1778265180215
+read      267.5   139.3    74.4   128.0   143.0   248.7   302.4   330.4   350.0   373.4   404.6   461.8   625.3  1083.7  4175.8 104893.8   105000  1778265181719  1778265186957
+read      257.9   122.9    74.4   126.7   141.1   236.9   289.5   317.8   338.4   362.8   394.8   449.0   605.9   994.8  3228.5 110246.6   110000  1778265188461  1778265193664
+read      275.9   130.3    74.4   133.9   151.2   263.6   311.2   336.8   355.4   377.5   407.8   462.4   607.8   921.0  3659.9 114983.9   115000  1778265195168  1778265200368
+read      278.8   129.0    80.4   137.2   154.5   264.5   312.8   338.9   358.1   380.7   411.3   464.4   618.4  1079.2  4174.6 119742.7   120000  1778265201871  1778265207072
+read      292.3   142.3    80.4   140.2   158.4   271.9   322.6   351.6   373.3   401.6   443.4   519.4   695.9  1097.4  3732.8 125063.1   125000  1778265208575  1778265213778
+Warning! Detected max cpu usage > 95%
+CPU Usage Stats (avg/min/max): 87.28%,56.57%,100.00%
+2026-05-08 20:33:34,441 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'if [ -f ~/cpu_t3_c0_1_2_rep3.pid ]; then kill $(cat ~/cpu_t3_c0_1_2_rep3.pid) 2>/dev/null || true; rm -f ~/cpu_t3_c0_1_2_rep3.pid; fi'
+2026-05-08 20:33:35,214 [INFO]   ✓ Results saved → results_b/20260508_203055/t3_c0_1_2_rep3.txt
+2026-05-08 20:33:35,214 [DEBUG] CMD: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep3.txt' results_b/20260508_203055/t3_c0_1_2_rep3_cpu.txt
+2026-05-08 20:33:35,783 [DEBUG] STDERR:
+scp: ~/cpu_t3_c0_1_2_rep3.txt: No such file or directory
+2026-05-08 20:33:35,784 [ERROR]   ✗ Command exited with code 1: scp -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126:'~/cpu_t3_c0_1_2_rep3.txt' results_b/20260508_203055/t3_c0_1_2_rep3_cpu.txt
+2026-05-08 20:33:35,784 [ERROR]   ✗ Failed to fetch CPU log: scp: ~/cpu_t3_c0_1_2_rep3.txt: No such file or directory
+2026-05-08 20:33:35,785 [INFO] 
+2026-05-08 20:33:35,785 [INFO] ============================================================
+2026-05-08 20:33:35,785 [INFO] DONE
+2026-05-08 20:33:35,785 [INFO]   Successful runs : 0/3
+2026-05-08 20:33:35,785 [INFO]   Failed runs     : 3/3
+2026-05-08 20:33:35,785 [INFO]   Results dir     : results_b/20260508_203055/
+2026-05-08 20:33:35,785 [INFO]   Log file        : logs_b/20260508_203055/benchmark_20260508_203055.log
+2026-05-08 20:33:35,786 [INFO] ============================================================

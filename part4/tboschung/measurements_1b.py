@@ -26,8 +26,8 @@ from itertools import product
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "35.233.95.216"
-MEASURE_IP          = "34.76.45.59"
+MEMCACHED_IP        = "35.241.183.126"
+MEASURE_IP          = "34.53.217.115"
 
 INTERNAL_MEMCACHED_IP = "10.0.16.4"
 INTERNAL_AGENT_IP     = "10.0.16.3"
@@ -46,7 +46,7 @@ CORE_CONFIGS = [
 REPETITIONS = 3
 
 # mcperf benchmark parameters (adjust as needed)
-MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 2 --scan 5000:125000:10000"
+MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 5000:125000:10000"
 
 # Seconds to wait between repetitions (reduces thermal/load noise)
 SLEEP_BETWEEN_REPS = 5
@@ -228,19 +228,19 @@ def run_mcperf(
     cpu_remote_script = f"~/cpu_logger_{run_label}.sh"
 
     cpu_logger_script = """#!/usr/bin/env bash
-                            set -u
-                            OUT=\"$1\"
-                            : > \"$OUT\"
-                            while true; do
-                            epoch_ms=$(date +%s%3N)
-                            iso_ts=$(date --iso-8601=milliseconds)
-                            host=$(hostname)
-                            echo \"# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}\" >> \"$OUT\"
-                            grep -E '^cpu[0-9]+ ' /proc/stat >> \"$OUT\"
-                            echo >> \"$OUT\"
-                            sleep 0.2
-                            done
-                            """
+set -u
+OUT=\"$1\"
+: > \"$OUT\"
+while true; do
+epoch_ms=$(date +%s%3N)
+iso_ts=$(date --iso-8601=milliseconds)
+host=$(hostname)
+echo \"# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}\" >> \"$OUT\"
+grep -E '^cpu[0-9]+ ' /proc/stat >> \"$OUT\"
+echo >> \"$OUT\"
+sleep 0.2
+done
+"""
 
     create_cpu_logger_cmd = (
         f"cat > {cpu_remote_script} <<'CPU_LOGGER_EOF'\n"

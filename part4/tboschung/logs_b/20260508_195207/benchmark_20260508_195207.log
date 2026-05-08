@@ -1,0 +1,52 @@
+2026-05-08 19:52:07,492 [INFO] Logging to: logs_b/20260508_195207/benchmark_20260508_195207.log
+2026-05-08 19:52:07,492 [INFO] ============================================================
+2026-05-08 19:52:07,492 [INFO] Memcached Benchmark Automation
+2026-05-08 19:52:07,492 [INFO]   Thread configs : [3]
+2026-05-08 19:52:07,492 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-05-08 19:52:07,492 [INFO]   Repetitions    : 3
+2026-05-08 19:52:07,492 [INFO]   Total runs     : 9
+2026-05-08 19:52:07,492 [INFO]   Dry run        : False
+2026-05-08 19:52:07,492 [INFO] ============================================================
+2026-05-08 19:52:07,492 [INFO] 
+2026-05-08 19:52:07,492 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:52:07,492 [INFO] CONFIG: threads=3, cores=[0]  [t3_c0]
+2026-05-08 19:52:07,492 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:52:07,492 [INFO]   → Setting threads=3 in config...
+2026-05-08 19:52:07,492 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:52:08,641 [INFO]   → Setting AllowedCPUs=0...
+2026-05-08 19:52:08,641 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl set-property memcached AllowedCPUs=0'
+2026-05-08 19:52:09,175 [INFO]   → Restarting memcached...
+2026-05-08 19:52:09,175 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl restart memcached'
+2026-05-08 19:52:10,487 [INFO]   → Waiting 4s for memcached to start...
+2026-05-08 19:52:14,488 [INFO]   → Verifying CPU affinity...
+2026-05-08 19:52:14,488 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'taskset -cp $(pgrep -o memcached)'
+2026-05-08 19:52:15,038 [DEBUG] STDOUT:
+pid 22185's current affinity list: 0
+2026-05-08 19:52:15,038 [INFO]   ✓ Affinity check: pid 22185's current affinity list: 0
+2026-05-08 19:52:15,038 [INFO]   ✓ memcached configured — threads=3, cores=[0]
+2026-05-08 19:52:15,039 [INFO]   [1/9] Repetition 1/3 — t3_c0_rep1
+2026-05-08 19:52:15,039 [INFO]   → Loading data into memcached...
+2026-05-08 19:52:15,039 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 --loadonly'
+2026-05-08 19:52:18,591 [INFO]   → Running benchmark (t3_c0_rep1) with raw /proc/stat CPU scraping...
+2026-05-08 19:52:18,592 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'cat > ~/cpu_logger_t3_c0_rep1.sh <<'"'"'CPU_LOGGER_EOF'"'"'
+#!/usr/bin/env bash
+                            set -u
+                            OUT="$1"
+                            : > "$OUT"
+                            while true; do
+                            epoch_ms=$(date +%s%3N)
+                            iso_ts=$(date --iso-8601=milliseconds)
+                            host=$(hostname)
+                            echo "# sample epoch_ms=${epoch_ms} iso_ts=${iso_ts} host=${host}" >> "$OUT"
+                            grep -E '"'"'^cpu[0-9]+ '"'"' /proc/stat >> "$OUT"
+                            echo >> "$OUT"
+                            sleep 0.2
+                            done
+                            CPU_LOGGER_EOF
+chmod +x ~/cpu_logger_t3_c0_rep1.sh
+nohup bash ~/cpu_logger_t3_c0_rep1.sh ~/cpu_t3_c0_rep1.txt >/tmp/cpu_logger_t3_c0_rep1.out 2>&1 &
+echo $! > ~/cpu_t3_c0_rep1.pid
+'
+2026-05-08 19:52:19,119 [DEBUG] STDERR:
+bash: line 18: warning: here-document at line 1 delimited by end-of-file (wanted `CPU_LOGGER_EOF')
+2026-05-08 19:52:20,124 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.53.217.115 'cd ~/memcache-perf-dynamic && ./mcperf -s 10.0.16.4 -a 10.0.16.3 --noload -T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 5000:125000:10000'

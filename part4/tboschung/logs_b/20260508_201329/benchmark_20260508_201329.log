@@ -1,0 +1,20 @@
+2026-05-08 20:13:29,439 [INFO] Logging to: logs_b/20260508_201329/benchmark_20260508_201329.log
+2026-05-08 20:13:29,440 [INFO] ============================================================
+2026-05-08 20:13:29,440 [INFO] Memcached Benchmark Automation
+2026-05-08 20:13:29,440 [INFO]   Thread configs : [3]
+2026-05-08 20:13:29,440 [INFO]   Core configs   : [[0, 1, 2]]
+2026-05-08 20:13:29,440 [INFO]   Repetitions    : 3
+2026-05-08 20:13:29,440 [INFO]   Total runs     : 3
+2026-05-08 20:13:29,440 [INFO]   Dry run        : False
+2026-05-08 20:13:29,440 [INFO] ============================================================
+2026-05-08 20:13:29,440 [INFO] 
+2026-05-08 20:13:29,440 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 20:13:29,440 [INFO] CONFIG: threads=3, cores=[0, 1, 2]  [t3_c0_1_2]
+2026-05-08 20:13:29,440 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 20:13:29,440 [INFO]   → Setting threads=3 in config...
+2026-05-08 20:13:29,440 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 20:13:29,862 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-05-08 20:13:29,863 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-08 20:13:30,291 [INFO]   → Restarting memcached...
+2026-05-08 20:13:30,291 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo systemctl restart memcached'
+2026-05-08 20:13:31,012 [INFO]   → Waiting 4s for memcached to start...

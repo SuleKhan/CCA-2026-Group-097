@@ -1,0 +1,5 @@
+ Setup and build completed successfully!
+Local QPS = 53709.0 (96676288 / 1800.0s) - 96676288.0, 0.0
+#type       avg     std     min      p5     p10     p50     p67     p75     p80     p85     p90     p95     p99    p999   p9999 QPS
+read      247.3    77.3    74.4   135.0   152.0   245.9   275.1   290.7   302.0   316.2   336.2   368.6   449.1   615.8  1343.9  53709.0
+

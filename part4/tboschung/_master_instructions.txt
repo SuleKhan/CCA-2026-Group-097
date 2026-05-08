@@ -1,0 +1,14 @@
+from local machine:
+    run setup: ./setup_cluster.sh
+
+*update ip addresses in setup memcache server, setup master & python script measurements_1.py*
+
+setup master, agent, measure and memcached
+    -> run the bash scripts on the servers and follow the guidance comments
+
+run ./setup_server_ssh.sh ubuntu@master_ip ubuntu@memcache_ip
+    this allows the master to ssh to memcache
+    
+copy _master_logger.py and _master_scheduler.py to the master 
+
+run python3 _master_scheduler.py on master

@@ -1,0 +1,50 @@
+2026-05-08 19:36:36,131 [INFO] Logging to: logs_b/20260508_193636/benchmark_20260508_193636.log
+2026-05-08 19:36:36,131 [INFO] ============================================================
+2026-05-08 19:36:36,131 [INFO] Memcached Benchmark Automation
+2026-05-08 19:36:36,131 [INFO]   Thread configs : [3]
+2026-05-08 19:36:36,131 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-05-08 19:36:36,131 [INFO]   Repetitions    : 3
+2026-05-08 19:36:36,131 [INFO]   Total runs     : 9
+2026-05-08 19:36:36,131 [INFO]   Dry run        : False
+2026-05-08 19:36:36,131 [INFO] ============================================================
+2026-05-08 19:36:36,131 [INFO] 
+2026-05-08 19:36:36,131 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:36:36,132 [INFO] CONFIG: threads=3, cores=[0]  [t3_c0]
+2026-05-08 19:36:36,132 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:36:36,132 [INFO]   → Setting threads=3 in config...
+2026-05-08 19:36:36,132 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:37:51,147 [DEBUG] STDERR:
+ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:37:51,148 [ERROR]   ✗ Command exited with code 255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:37:51,149 [ERROR]   ✗ Failed to update thread config: ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:37:51,149 [ERROR] Skipping all repetitions for t3_c0 due to config failure.
+2026-05-08 19:37:51,149 [INFO] 
+2026-05-08 19:37:51,149 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:37:51,149 [INFO] CONFIG: threads=3, cores=[0, 1]  [t3_c0_1]
+2026-05-08 19:37:51,149 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:37:51,149 [INFO]   → Setting threads=3 in config...
+2026-05-08 19:37:51,150 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:39:06,197 [DEBUG] STDERR:
+ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:39:06,199 [ERROR]   ✗ Command exited with code 255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:39:06,199 [ERROR]   ✗ Failed to update thread config: ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:39:06,199 [ERROR] Skipping all repetitions for t3_c0_1 due to config failure.
+2026-05-08 19:39:06,199 [INFO] 
+2026-05-08 19:39:06,199 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:39:06,199 [INFO] CONFIG: threads=3, cores=[0, 1, 2]  [t3_c0_1_2]
+2026-05-08 19:39:06,199 [INFO] ────────────────────────────────────────────────────────────
+2026-05-08 19:39:06,199 [INFO]   → Setting threads=3 in config...
+2026-05-08 19:39:06,200 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:40:21,233 [DEBUG] STDERR:
+ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:40:21,235 [ERROR]   ✗ Command exited with code 255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.233.95.216 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-08 19:40:21,236 [ERROR]   ✗ Failed to update thread config: ssh: connect to host 35.233.95.216 port 22: Operation timed out
+2026-05-08 19:40:21,236 [ERROR] Skipping all repetitions for t3_c0_1_2 due to config failure.
+2026-05-08 19:40:21,236 [INFO] 
+2026-05-08 19:40:21,236 [INFO] ============================================================
+2026-05-08 19:40:21,236 [INFO] DONE
+2026-05-08 19:40:21,236 [INFO]   Successful runs : 0/9
+2026-05-08 19:40:21,237 [INFO]   Failed runs     : 9/9
+2026-05-08 19:40:21,237 [INFO]   Results dir     : results_b/20260508_193636/
+2026-05-08 19:40:21,237 [INFO]   Log file        : logs_b/20260508_193636/benchmark_20260508_193636.log
+2026-05-08 19:40:21,237 [INFO] ============================================================
