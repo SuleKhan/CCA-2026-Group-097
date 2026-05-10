@@ -1,0 +1,258 @@
+2026-05-10 12:29:40,335 [INFO] Logging to: logs_interference/20260510_122940/benchmark_20260510_122940.log
+2026-05-10 12:29:40,335 [INFO] ======================================================================
+2026-05-10 12:29:40,335 [INFO] Memcached Interference Benchmark
+2026-05-10 12:29:40,335 [INFO] Threads: [3]
+2026-05-10 12:29:40,335 [INFO] Cores: [[0, 1, 2]]
+2026-05-10 12:29:40,335 [INFO] Interference modes: ['none', 'memory']
+2026-05-10 12:29:40,336 [INFO] Repetitions: 3
+2026-05-10 12:29:40,336 [INFO] Results dir: results_interference/20260510_122940
+2026-05-10 12:29:40,336 [INFO] ======================================================================
+2026-05-10 12:29:40,336 [INFO] 
+2026-05-10 12:29:40,336 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:29:40,336 [INFO] CONFIG: t3_c0_1_2_int_none
+2026-05-10 12:29:40,336 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:29:40,336 [INFO]   → Setting memcached threads=3
+2026-05-10 12:29:40,336 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:29:41,078 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:29:41,079 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:29:41,621 [INFO]   → Restarting memcached
+2026-05-10 12:29:41,622 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:46,111 [INFO]   → Verifying memcached affinity
+2026-05-10 12:29:46,113 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:46,680 [DEBUG] STDERR:
+Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:29:46,680 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:46,680 [ERROR]   ✗ Restart failed: Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:29:46,681 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'systemctl status memcached --no-pager; journalctl -u memcached -n 80 --no-pager'
+2026-05-10 12:29:47,160 [DEBUG] STDOUT:
+× memcached.service - memcached daemon
+     Loaded: loaded (/usr/lib/systemd/system/memcached.service; enabled; preset: enabled)
+    Drop-In: /etc/systemd/system.control/memcached.service.d
+             └─50-AllowedCPUs.conf
+     Active: failed (Result: exit-code) since Sun 2026-05-10 10:29:43 UTC; 3s ago
+   Duration: 55ms
+       Docs: man:memcached(1)
+    Process: 16350 ExecStart=/usr/share/memcached/scripts/systemd-memcached-wrapper /etc/memcached.conf (code=exited, status=71)
+   Main PID: 16350 (code=exited, status=71)
+        CPU: 55ms
+
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15763]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15763]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 1.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15775]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15775]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 2.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15787]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15787]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 3.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15799]: bind(): Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15799]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 4.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15811]: bind(): Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15811]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16301]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16301]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 1.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16313]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16313]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 2.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16325]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16325]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 3.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16337]: bind(): Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16337]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 4.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16350]: bind(): Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16350]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+2026-05-10 12:29:47,161 [ERROR]   memcached diagnostics STDOUT:
+× memcached.service - memcached daemon
+     Loaded: loaded (/usr/lib/systemd/system/memcached.service; enabled; preset: enabled)
+    Drop-In: /etc/systemd/system.control/memcached.service.d
+             └─50-AllowedCPUs.conf
+     Active: failed (Result: exit-code) since Sun 2026-05-10 10:29:43 UTC; 3s ago
+   Duration: 55ms
+       Docs: man:memcached(1)
+    Process: 16350 ExecStart=/usr/share/memcached/scripts/systemd-memcached-wrapper /etc/memcached.conf (code=exited, status=71)
+   Main PID: 16350 (code=exited, status=71)
+        CPU: 55ms
+
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:52 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:26:57 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15763]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15763]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 1.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15775]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15775]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 2.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15787]: bind(): Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15787]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 3.
+May 10 10:27:39 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15799]: bind(): Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15799]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 4.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15811]: bind(): Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[15811]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:40 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:27:45 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16301]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16301]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 1.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16313]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16313]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 2.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16325]: bind(): Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16325]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 3.
+May 10 10:29:42 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16337]: bind(): Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16337]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 4.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Started memcached.service - memcached daemon.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16350]: bind(): Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd-memcached-wrapper[16350]: failed to listen on one of interface(s) 10.0.16.5: Cannot assign requested address
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Main process exited, code=exited, status=71/OSERR
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Scheduled restart job, restart counter is at 5.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:43 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Start request repeated too quickly.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: memcached.service: Failed with result 'exit-code'.
+May 10 10:29:46 memcache-server-5gqv.europe-west1-b.c.cca-26-project.internal systemd[1]: Failed to start memcached.service - memcached daemon.
+2026-05-10 12:29:47,161 [ERROR]   memcached diagnostics STDERR:
+
+2026-05-10 12:29:47,162 [INFO] 
+2026-05-10 12:29:47,162 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:29:47,162 [INFO] CONFIG: t3_c0_1_2_int_memory
+2026-05-10 12:29:47,162 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:29:47,162 [INFO]   → Setting memcached threads=3
+2026-05-10 12:29:47,162 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:29:47,616 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:29:47,616 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:29:48,094 [INFO]   → Restarting memcached
+2026-05-10 12:29:48,095 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:48,578 [DEBUG] STDERR:
+Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:29:48,578 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:48,578 [WARNING]   ⚠ Restart returned nonzero: Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:29:52,584 [INFO]   → Verifying memcached affinity
+2026-05-10 12:29:52,585 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:29:53,102 [INFO]   ✓ Affinity check: 
+2026-05-10 12:29:53,102 [ERROR]   ✗ Affinity mismatch. Expected 0,1,2, got: 
+2026-05-10 12:29:53,103 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'
+2026-05-10 12:29:53,557 [ERROR] Command failed with rc=255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'
+2026-05-10 12:29:53,557 [INFO] 
+2026-05-10 12:29:53,557 [INFO] ======================================================================
+2026-05-10 12:29:53,557 [INFO] DONE
+2026-05-10 12:29:53,557 [INFO] Successful runs: 0
+2026-05-10 12:29:53,557 [INFO] Failed runs: 6
+2026-05-10 12:29:53,557 [INFO] Results dir: results_interference/20260510_122940
+2026-05-10 12:29:53,557 [INFO] Log file: logs_interference/20260510_122940/benchmark_20260510_122940.log
+2026-05-10 12:29:53,558 [INFO] ======================================================================

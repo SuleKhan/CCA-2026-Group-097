@@ -28,6 +28,17 @@ import time
 from datetime import datetime
 from itertools import product
 
+from _ip_parser import (
+    MEMCACHED_IP,
+    MEASURE_IP,
+    INTERNAL_MEMCACHED_IP,
+    INTERNAL_AGENT_IP,
+    NODES,
+)
+# print(NODES.all_ips())
+# print(NODES.external_ip("master"))
+# print(NODES.internal_ip("client-measure"))
+
 
 # ─────────────────────────────────────────────
 # CONFIG
@@ -36,12 +47,6 @@ from itertools import product
 
 SSH_KEY = "~/.ssh/cloud-computing"
 SSH_OPTS = "-o StrictHostKeyChecking=no"
-
-MEMCACHED_IP = "35.241.183.126"
-MEASURE_IP = "34.53.217.115"
-
-INTERNAL_MEMCACHED_IP = "10.0.16.4"
-INTERNAL_AGENT_IP = "10.0.16.3"
 
 THREAD_CONFIGS = [3]
 
@@ -59,7 +64,7 @@ INTERFERENCE_MODES = [
 
 REPETITIONS = 3
 
-MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 5000:125000:10000"
+MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 120 --qps_interval 10 --qps_min 5000 --qps_max 110000"
 
 SLEEP_BETWEEN_REPS = 5
 

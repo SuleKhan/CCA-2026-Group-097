@@ -1,0 +1,43 @@
+2026-05-10 12:23:08,573 [INFO] Logging to: logs_interference/20260510_122308/benchmark_20260510_122308.log
+2026-05-10 12:23:08,573 [INFO] ======================================================================
+2026-05-10 12:23:08,573 [INFO] Memcached Interference Benchmark
+2026-05-10 12:23:08,573 [INFO] Threads: [3]
+2026-05-10 12:23:08,573 [INFO] Cores: [[0, 1, 2]]
+2026-05-10 12:23:08,573 [INFO] Interference modes: ['none', 'memory']
+2026-05-10 12:23:08,573 [INFO] Repetitions: 3
+2026-05-10 12:23:08,573 [INFO] Results dir: results_interference/20260510_122308
+2026-05-10 12:23:08,573 [INFO] ======================================================================
+2026-05-10 12:23:08,574 [INFO] 
+2026-05-10 12:23:08,574 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:23:08,574 [INFO] CONFIG: t3_c0_1_2_int_none
+2026-05-10 12:23:08,574 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:23:08,574 [INFO]   → Setting memcached threads=3
+2026-05-10 12:23:08,574 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:23:09,304 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:23:09,305 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:23:09,762 [INFO]   → Restarting memcached
+2026-05-10 12:23:09,762 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:14,853 [INFO]   → Verifying memcached affinity
+2026-05-10 12:23:14,854 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:15,474 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:15,475 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:15,475 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:15,475 [INFO] 
+2026-05-10 12:23:15,475 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:23:15,476 [INFO] CONFIG: t3_c0_1_2_int_memory
+2026-05-10 12:23:15,476 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:23:15,476 [INFO]   → Setting memcached threads=3
+2026-05-10 12:23:15,477 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:23:15,981 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:23:15,981 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:23:16,429 [INFO]   → Restarting memcached
+2026-05-10 12:23:16,429 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:16,922 [DEBUG] STDERR:
+Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:23:16,922 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:16,922 [WARNING]   ⚠ Restart returned nonzero: Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:23:17,563 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'
+2026-05-10 12:23:18,021 [ERROR] Command failed with rc=255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'

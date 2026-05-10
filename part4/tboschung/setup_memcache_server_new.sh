@@ -3,7 +3,7 @@ set -euo pipefail
 
 # set up reverse tunnel again
 
-MEMCACHED_INTERNAL_IP="10.0.16.5"
+MEMCACHED_INTERNAL_IP="10.0.16.4"
 
 echo "=== Updating system ==="
 sudo apt update

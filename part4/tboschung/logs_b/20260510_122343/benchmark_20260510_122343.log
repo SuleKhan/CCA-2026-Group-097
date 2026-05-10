@@ -1,0 +1,77 @@
+2026-05-10 12:23:43,219 [INFO] Logging to: logs_b/20260510_122343/benchmark_20260510_122343.log
+2026-05-10 12:23:43,219 [INFO] ============================================================
+2026-05-10 12:23:43,219 [INFO] Memcached Benchmark Automation
+2026-05-10 12:23:43,219 [INFO]   Thread configs : [3]
+2026-05-10 12:23:43,219 [INFO]   Core configs   : [[0], [0, 1], [0, 1, 2]]
+2026-05-10 12:23:43,219 [INFO]   Repetitions    : 3
+2026-05-10 12:23:43,219 [INFO]   Total runs     : 9
+2026-05-10 12:23:43,219 [INFO]   Dry run        : False
+2026-05-10 12:23:43,219 [INFO] ============================================================
+2026-05-10 12:23:43,219 [INFO] 
+2026-05-10 12:23:43,219 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:43,219 [INFO] CONFIG: threads=3, cores=[0]  [t3_c0]
+2026-05-10 12:23:43,219 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:43,219 [INFO]   → Setting threads=3 in config...
+2026-05-10 12:23:43,219 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:23:43,654 [INFO]   → Setting AllowedCPUs=0...
+2026-05-10 12:23:43,654 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0'
+2026-05-10 12:23:44,110 [INFO]   → Restarting memcached...
+2026-05-10 12:23:44,110 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:44,560 [INFO]   → Waiting 4s for memcached to start...
+2026-05-10 12:23:48,565 [INFO]   → Verifying CPU affinity...
+2026-05-10 12:23:48,566 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:49,078 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:49,079 [ERROR]   ✗ Command exited with code 1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:49,079 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:49,079 [ERROR] Skipping all repetitions for t3_c0 due to config failure.
+2026-05-10 12:23:49,079 [INFO] 
+2026-05-10 12:23:49,079 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:49,079 [INFO] CONFIG: threads=3, cores=[0, 1]  [t3_c0_1]
+2026-05-10 12:23:49,079 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:49,079 [INFO]   → Setting threads=3 in config...
+2026-05-10 12:23:49,079 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:23:49,529 [INFO]   → Setting AllowedCPUs=0,1...
+2026-05-10 12:23:49,529 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1'
+2026-05-10 12:23:49,988 [INFO]   → Restarting memcached...
+2026-05-10 12:23:49,989 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:50,412 [DEBUG] STDERR:
+Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:23:50,413 [ERROR]   ✗ Command exited with code 1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:50,413 [WARNING]   ⚠ Restart returned non-zero (may be OK): Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:23:50,413 [INFO]   → Waiting 4s for memcached to start...
+2026-05-10 12:23:54,418 [INFO]   → Verifying CPU affinity...
+2026-05-10 12:23:54,418 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:54,890 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:54,890 [ERROR]   ✗ Command exited with code 1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:23:54,891 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:23:54,891 [ERROR] Skipping all repetitions for t3_c0_1 due to config failure.
+2026-05-10 12:23:54,891 [INFO] 
+2026-05-10 12:23:54,891 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:54,891 [INFO] CONFIG: threads=3, cores=[0, 1, 2]  [t3_c0_1_2]
+2026-05-10 12:23:54,891 [INFO] ────────────────────────────────────────────────────────────
+2026-05-10 12:23:54,891 [INFO]   → Setting threads=3 in config...
+2026-05-10 12:23:54,891 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:23:55,331 [INFO]   → Setting AllowedCPUs=0,1,2...
+2026-05-10 12:23:55,331 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:23:55,866 [INFO]   → Restarting memcached...
+2026-05-10 12:23:55,866 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:23:56,326 [INFO]   → Waiting 4s for memcached to start...
+2026-05-10 12:24:00,336 [INFO]   → Verifying CPU affinity...
+2026-05-10 12:24:00,337 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:24:00,864 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:24:00,865 [ERROR]   ✗ Command exited with code 1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:24:00,865 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:24:00,865 [ERROR] Skipping all repetitions for t3_c0_1_2 due to config failure.
+2026-05-10 12:24:00,865 [INFO] 
+2026-05-10 12:24:00,865 [INFO] ============================================================
+2026-05-10 12:24:00,865 [INFO] DONE
+2026-05-10 12:24:00,865 [INFO]   Successful runs : 0/9
+2026-05-10 12:24:00,865 [INFO]   Failed runs     : 9/9
+2026-05-10 12:24:00,865 [INFO]   Results dir     : results_b/20260510_122343/
+2026-05-10 12:24:00,865 [INFO]   Log file        : logs_b/20260510_122343/benchmark_20260510_122343.log
+2026-05-10 12:24:00,865 [INFO] ============================================================

@@ -1,0 +1,16 @@
+2026-05-10 12:22:05,812 [INFO] Logging to: logs_interference/20260510_122205/benchmark_20260510_122205.log
+2026-05-10 12:22:05,812 [INFO] ======================================================================
+2026-05-10 12:22:05,812 [INFO] Memcached Interference Benchmark
+2026-05-10 12:22:05,812 [INFO] Threads: [3]
+2026-05-10 12:22:05,812 [INFO] Cores: [[0, 1, 2]]
+2026-05-10 12:22:05,812 [INFO] Interference modes: ['none', 'memory']
+2026-05-10 12:22:05,812 [INFO] Repetitions: 3
+2026-05-10 12:22:05,812 [INFO] Results dir: results_interference/20260510_122205
+2026-05-10 12:22:05,813 [INFO] ======================================================================
+2026-05-10 12:22:05,813 [INFO] 
+2026-05-10 12:22:05,813 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:22:05,813 [INFO] CONFIG: t3_c0_1_2_int_none
+2026-05-10 12:22:05,813 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:22:05,813 [INFO]   → Setting memcached threads=3
+2026-05-10 12:22:05,813 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:22:15,284 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@35.241.183.126 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'

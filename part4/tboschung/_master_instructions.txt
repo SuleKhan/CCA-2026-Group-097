@@ -6,8 +6,8 @@ from local machine:
 setup master, agent, measure and memcached
     -> run the bash scripts on the servers and follow the guidance comments
 
-run ./setup_server_ssh.sh ubuntu@master_ip ubuntu@memcache_ip
-    this allows the master to ssh to memcache
+run this command: (this allows the master to ssh to memcache)
+    ./setup_server_ssh.sh ubuntu@master_ip ubuntu@memcache_ip
     
 copy _master_logger.py and _master_scheduler.py to the master 
 

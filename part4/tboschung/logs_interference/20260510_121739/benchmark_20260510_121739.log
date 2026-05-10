@@ -1,0 +1,57 @@
+2026-05-10 12:17:39,310 [INFO] Logging to: logs_interference/20260510_121739/benchmark_20260510_121739.log
+2026-05-10 12:17:39,310 [INFO] ======================================================================
+2026-05-10 12:17:39,310 [INFO] Memcached Interference Benchmark
+2026-05-10 12:17:39,310 [INFO] Threads: [3]
+2026-05-10 12:17:39,310 [INFO] Cores: [[0, 1, 2]]
+2026-05-10 12:17:39,310 [INFO] Interference modes: ['none', 'memory']
+2026-05-10 12:17:39,311 [INFO] Repetitions: 3
+2026-05-10 12:17:39,311 [INFO] Results dir: results_interference/20260510_121739
+2026-05-10 12:17:39,311 [INFO] ======================================================================
+2026-05-10 12:17:39,311 [INFO] 
+2026-05-10 12:17:39,311 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:17:39,311 [INFO] CONFIG: t3_c0_1_2_int_none
+2026-05-10 12:17:39,311 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:17:39,311 [INFO]   → Setting memcached threads=3
+2026-05-10 12:17:39,311 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:17:40,118 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:17:40,119 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:17:40,581 [INFO]   → Restarting memcached
+2026-05-10 12:17:40,581 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:17:45,147 [INFO]   → Verifying memcached affinity
+2026-05-10 12:17:45,148 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:17:45,617 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:17:45,617 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:17:45,617 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:17:45,618 [INFO] 
+2026-05-10 12:17:45,618 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:17:45,618 [INFO] CONFIG: t3_c0_1_2_int_memory
+2026-05-10 12:17:45,618 [INFO] ──────────────────────────────────────────────────────────────────────
+2026-05-10 12:17:45,618 [INFO]   → Setting memcached threads=3
+2026-05-10 12:17:45,618 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo sed -i -E "s/^-t .*/-t 3/" /etc/memcached.conf'
+2026-05-10 12:17:46,135 [INFO]   → Setting memcached AllowedCPUs=0,1,2
+2026-05-10 12:17:46,135 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl set-property memcached AllowedCPUs=0,1,2'
+2026-05-10 12:17:46,603 [INFO]   → Restarting memcached
+2026-05-10 12:17:46,604 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:17:47,135 [DEBUG] STDERR:
+Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:17:47,136 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'sudo systemctl restart memcached'
+2026-05-10 12:17:47,136 [WARNING]   ⚠ Restart returned nonzero: Job for memcached.service failed because the control process exited with error code.
+See "systemctl status memcached.service" and "journalctl -xeu memcached.service" for details.
+2026-05-10 12:17:51,141 [INFO]   → Verifying memcached affinity
+2026-05-10 12:17:51,142 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:17:51,594 [DEBUG] STDERR:
+taskset: invalid PID argument: '-cp'
+2026-05-10 12:17:51,594 [ERROR] Command failed with rc=1: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'taskset -cp $(pgrep -o memcached)'
+2026-05-10 12:17:51,594 [ERROR]   ✗ Failed to verify affinity: taskset: invalid PID argument: '-cp'
+2026-05-10 12:17:51,594 [DEBUG] CMD: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'
+2026-05-10 12:17:52,034 [ERROR] Command failed with rc=255: ssh -i /Users/Tobias/.ssh/cloud-computing -o StrictHostKeyChecking=no ubuntu@34.77.140.213 'if [ -f ~/interference_core3.pid ]; then kill $(cat ~/interference_core3.pid) 2>/dev/null || true; rm -f ~/interference_core3.pid; fi; pkill -f interference_memory_core3.py 2>/dev/null || true'
+2026-05-10 12:17:52,034 [INFO] 
+2026-05-10 12:17:52,034 [INFO] ======================================================================
+2026-05-10 12:17:52,034 [INFO] DONE
+2026-05-10 12:17:52,034 [INFO] Successful runs: 0
+2026-05-10 12:17:52,034 [INFO] Failed runs: 6
+2026-05-10 12:17:52,034 [INFO] Results dir: results_interference/20260510_121739
+2026-05-10 12:17:52,035 [INFO] Log file: logs_interference/20260510_121739/benchmark_20260510_121739.log
+2026-05-10 12:17:52,035 [INFO] ======================================================================

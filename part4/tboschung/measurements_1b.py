@@ -23,14 +23,17 @@ from itertools import product
 # CONFIG — edit these before running
 # ─────────────────────────────────────────────
 
+RANDOM_QPS = True
+
 SSH_KEY             = "~/.ssh/cloud-computing"
 SSH_OPTS            = "-o StrictHostKeyChecking=no"
 
-MEMCACHED_IP        = "35.241.183.126"
-MEASURE_IP          = "34.53.217.115"
+MEMCACHED_IP        = "34.77.140.213"
+MEASURE_IP          = "34.38.93.213"
 
 INTERNAL_MEMCACHED_IP = "10.0.16.4"
-INTERNAL_AGENT_IP     = "10.0.16.3"
+INTERNAL_AGENT_IP     = "10.0.16.5"
+
 
 # Thread counts to sweep
 THREAD_CONFIGS = [3]
@@ -46,7 +49,11 @@ CORE_CONFIGS = [
 REPETITIONS = 3
 
 # mcperf benchmark parameters (adjust as needed)
-MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 5000:125000:10000"
+if(RANDOM_QPS):
+    MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 120 --qps_interval 10 --qps_min 5000 --qps_max 110000"
+else:
+    MCPERF_PARAMS = "-T 8 -C 8 -D 4 -Q 1000 -c 8 -t 5 --scan 5000:125000:10000"
+
 
 # Seconds to wait between repetitions (reduces thermal/load noise)
 SLEEP_BETWEEN_REPS = 5
@@ -167,6 +174,7 @@ def set_threads_and_cores(
 
     # Step 5: VERIFY affinity (this is critical)
     verify_cmd = "taskset -cp $(pgrep -o memcached)"
+    
     logger.info("  → Verifying CPU affinity...")
     rc, stdout, stderr = run(ssh_cmd(MEMCACHED_IP, verify_cmd), logger, dry_run)
     if rc != 0:
@@ -331,6 +339,7 @@ def main():
     logger.info(f"  Repetitions    : {args.repetitions}")
     logger.info(f"  Total runs     : {total_runs}")
     logger.info(f"  Dry run        : {args.dry_run}")
+    logger.info(f"  Dynamic Load   : {RANDOM_QPS}")
     logger.info("=" * 60)
 
     success_count = 0
