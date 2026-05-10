@@ -28,7 +28,7 @@ MEMCACHE_HIGH_UTIL = 75.0
 MEMCACHE_LOW_UTIL = 55.0
 EWMA_ALPHA = 0.40
 
-THREADS = 8
+JOB_THREADS = 2
 CPU_LOG_FILE = "cpu_usage.log"
 
 # Four-core memcached host policy:
@@ -201,14 +201,14 @@ def start_job(
     job: Job,
     image: str,
     cores: list[int],
-    threads: int,
+    JOB_threads: int,
     mem_conn: RemoteShell,
     logger: SchedulerLogger,
 ) -> RemoteDockerContainer:
     core_str = ",".join(map(str, cores))
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     name = f"scheduler-{job.value}-{run_id}"
-    command = f"./run -a run -S parsec -p {job.value} -i native -n {threads}"
+    command = f"./run -a run -S parsec -p {job.value} -i native -n {JOB_threads}"
 
     mem_conn.run(
         " ".join(
@@ -226,7 +226,7 @@ def start_job(
         ),
         hide=True,
     )
-    logger.job_start(job, cores, threads)
+    logger.job_start(job, cores, JOB_threads)
     return RemoteDockerContainer(mem_conn, name)
 
 
@@ -297,7 +297,7 @@ def scheduler() -> None:
 
         # Start with memcached protected on its baseline cores and jobs using the
         # spare cores for maximum throughput.
-        logger.job_start(Job.MEMCACHED, memcached_cores, THREADS)
+        logger.job_start(Job.MEMCACHED, memcached_cores, JOB_THREADS)
         memcached_logged_started = True
         set_memcached_cores(memcached_cores, memcached_pid, mem_conn, logger)
         sampler.utilization_percent(memcached_cores)  # seed baseline
@@ -308,7 +308,7 @@ def scheduler() -> None:
 
         current_job, image = job_queue.pop(0)
         print(f"Starting {current_job.value} on memcache host cores {job_cores}")
-        container = start_job(current_job, image, job_cores, THREADS, mem_conn, logger)
+        container = start_job(current_job, image, job_cores, JOB_THREADS, mem_conn, logger)
 
         while container is not None:
             container.reload()
@@ -323,7 +323,7 @@ def scheduler() -> None:
                 # New jobs start with the current policy's job cores.
                 current_job, image = job_queue.pop(0)
                 print(f"Starting {current_job.value} on memcache host cores {job_cores}")
-                container = start_job(current_job, image, job_cores, THREADS, mem_conn, logger)
+                container = start_job(current_job, image, job_cores, JOB_THREADS, mem_conn, logger)
 
             raw_cpu = sampler.utilization_percent(memcached_cores)
             if (len(memcached_cores) == 2 and raw_cpu >=75) or (len(memcached_cores) == 3 and raw_cpu >=80):

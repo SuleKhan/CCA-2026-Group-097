@@ -13,7 +13,7 @@ import matplotlib as mpl
 # POLICY_DIR = "single_job_2_core_seq"
 # POLICY_DIR = "double_job"
 # POLICY_DIR = "2_core_memcache_2_core_job"
-POLICY_DIR = "master_run1"
+POLICY_DIR = "master_run_maybefinal"
 # POLICY_DIR = "2_3_core_memcache_1_2_core_job_single_seq"
 # POLICY_DIR = "4_core_memcache"
 # POLICY_DIR = "3_core_memcache"

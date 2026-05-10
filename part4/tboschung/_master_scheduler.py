@@ -29,7 +29,7 @@ MEMCACHE_SSH_KEY = ".ssh/master_node_key"
 # the previous phase cannot keep the scheduler in a conservative mode.
 MEMCACHE_UTIL_THRESHOLD = 75.0
 
-THREADS = 8
+JOB_THREADS = 2
 CPU_LOG_FILE = "cpu_usage.log"
 
 # Four-core memcached host policy.
@@ -239,14 +239,14 @@ def start_job(
     job: Job,
     image: str,
     cores: list[int],
-    threads: int,
+    JOB_threads: int,
     mem_conn: RemoteShell,
     logger: SchedulerLogger,
 ) -> RemoteDockerContainer:
     core_str = ",".join(map(str, cores))
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     name = f"scheduler-{job.value}-{run_id}"
-    command = f"./run -a run -S parsec -p {job.value} -i native -n {threads}"
+    command = f"./run -a run -S parsec -p {job.value} -i native -n {JOB_threads}"
 
     mem_conn.run(
         " ".join(
@@ -264,7 +264,7 @@ def start_job(
         ),
         hide=True,
     )
-    logger.job_start(job, cores, threads)
+    logger.job_start(job, cores, JOB_threads)
     return RemoteDockerContainer(mem_conn, name)
 
 
@@ -423,7 +423,7 @@ def scheduler() -> None:
 
         # Start in FAST: memcached gets two protected cores and the batch job
         # gets the other two cores for maximum throughput.
-        logger.job_start(Job.MEMCACHED, memcached_cores, THREADS)
+        logger.job_start(Job.MEMCACHED, memcached_cores, JOB_THREADS)
         memcached_logged_started = True
         set_memcached_cores(memcached_cores, memcached_pid, mem_conn, logger)
         sampler.utilization_percent(memcached_cores)  # seed baseline
@@ -434,7 +434,7 @@ def scheduler() -> None:
 
         current_job, image = job_queue.pop(0)
         print(f"Starting {current_job.value} on memcache host cores {job_cores}")
-        container = start_job(current_job, image, job_cores, THREADS, mem_conn, logger)
+        container = start_job(current_job, image, job_cores, JOB_THREADS, mem_conn, logger)
 
         while container is not None:
             container.reload()
@@ -452,7 +452,7 @@ def scheduler() -> None:
                 current_job, image = job_queue.pop(0)
                 start_cores = JOB_SAFE_CORES if mode == SchedulerMode.FULL_MEMCACHE else job_cores
                 print(f"Starting {current_job.value} on memcache host cores {start_cores}")
-                container = start_job(current_job, image, start_cores, THREADS, mem_conn, logger)
+                container = start_job(current_job, image, start_cores, JOB_THREADS, mem_conn, logger)
                 if mode == SchedulerMode.FULL_MEMCACHE:
                     pause_job(container, current_job, logger)
                     job_cores = JOB_PAUSED_CORES.copy()
@@ -466,7 +466,7 @@ def scheduler() -> None:
                 sampler.reset()
                 sampler.utilization_percent(memcached_cores)  # seed this phase only
                 last_switch = 0.0  # allow immediate switching in the new phase
-                print("New QPS phase detected; reset fresh CPU window")
+                # print("New QPS phase detected; reset fresh CPU window")
                 time.sleep(CHECK_INTERVAL_SEC)
                 continue
 
