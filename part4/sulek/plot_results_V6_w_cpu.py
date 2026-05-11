@@ -17,6 +17,7 @@ import matplotlib as mpl
 POLICY_DIR = "2_3_core_memcache_1_2_core_job_single_seq"
 # POLICY_DIR = "4_core_memcache"
 # POLICY_DIR = "3_core_memcache"
+# POLICY_DIR = "dynamic_policy"
 
 LOG_AGENT_FILE = f"{POLICY_DIR}/agent_log.txt" 
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"

@@ -2,6 +2,7 @@ import docker
 import psutil
 import subprocess
 import time
+from datetime import datetime
 
 from scheduler_logger import SchedulerLogger, Job
 
@@ -20,12 +21,19 @@ THREADS = 8
 # Get memcached PID
 MEMCACHED_PID = int(subprocess.getoutput("pidof memcached").split()[0])
 
+CPU_LOG_FILE = "cpu_usage.log"
+
 client = docker.from_env()
 logger = SchedulerLogger()
 
 # =========================
 # MEMCACHED CONTROL
 # =========================
+
+def log_cpu(cpu_percent):
+    timestamp = datetime.now().isoformat()
+    with open(CPU_LOG_FILE, "a") as f:
+        f.write(f"{timestamp},{cpu_percent:.2f}\n")
 
 def set_memcached_cores(cores):
     core_str = ",".join(map(str, cores))
@@ -72,25 +80,17 @@ def stop_job(container, job_enum):
 # =========================
 
 JOB_MAP = [
-    (Job.BLACKSCHOLES, "anakli/cca:parsec_blackscholes"),
-    (Job.CANNEAL, "anakli/cca:parsec_canneal"),
-    (Job.FREQMINE, "anakli/cca:parsec_freqmine"),
     (Job.RADIX, "anakli/cca:splash2x_radix"),
-    (Job.STREAMCLUSTER, "anakli/cca:parsec_streamcluster"),
+    (Job.CANNEAL, "anakli/cca:parsec_canneal"),
+    (Job.BLACKSCHOLES, "anakli/cca:parsec_blackscholes"),
     (Job.VIPS, "anakli/cca:parsec_vips"),
+    (Job.FREQMINE, "anakli/cca:parsec_freqmine"),
+    (Job.STREAMCLUSTER, "anakli/cca:parsec_streamcluster"),
     (Job.BARNES, "anakli/cca:splash2x_barnes"),
 ]
 
 job_queue = JOB_MAP.copy()
 running_jobs = []
-
-# =========================
-# CPU MONITORING
-# =========================
-
-def get_cpu():
-    return psutil.cpu_percent(interval=1)
-
 
 # =========================
 # SCHEDULER
@@ -110,6 +110,9 @@ def scheduler():
 
         # Wait until job finishes
         while True:
+            cpu = psutil.cpu_percent(interval=1)
+            log_cpu(cpu)
+
             container.reload()
             if container.status == "exited":
                 logger.job_end(job_enum)

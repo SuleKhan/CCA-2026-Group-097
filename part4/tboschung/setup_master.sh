@@ -2,9 +2,9 @@ sudo apt-get update
 sudo apt-get install -y python3 python3-pip
 sudo apt install python3-fabric
 
-MEMCACHED_IP=34.77.140.213 
-MEASURE_IP=34.38.93.213
-AGENT_IP=34.62.183.137
+MEMCACHED_IP=34.62.208.119 
+MEASURE_IP=35.205.70.192
+AGENT_IP=34.14.112.126
 
 # need to run this first:
 #   ./setup_server_ssh.sh ubuntu@master_ip ubuntu@memcache_ip
@@ -21,4 +21,4 @@ ssh -i ~/.ssh/master_node_key ubuntu@${MEASUSRE_IP} "hostname"
 # then test again
 
 
-ssh -i ~/.ssh/master_node_key ubuntu@$34.77.140.213 "PID=\$(pidof memcached | awk '{print \$1}'); sudo -n taskset -a -cp 0 \$PID"
+ssh -i ~/.ssh/master_node_key ubuntu@${MEMCACHED_IP} "PID=\$(pidof memcached | awk '{print \$1}'); sudo -n taskset -a -cp 0 \$PID"

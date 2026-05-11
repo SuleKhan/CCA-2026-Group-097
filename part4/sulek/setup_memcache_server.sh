@@ -27,9 +27,9 @@ sudo sed -i "s/^-l .*/-l ${MEMCACHED_INTERNAL_IP}/" $CONFIG_FILE
 
 # Set default of 1 thread (add if not present)
 if grep -q "^-t" $CONFIG_FILE; then
-  sudo sed -i 's/^-t .*/-t 8/' $CONFIG_FILE
+  sudo sed -i 's/^-t .*/-t 3/' $CONFIG_FILE
 else
-  echo "-t 8" | sudo tee -a $CONFIG_FILE
+  echo "-t 3" | sudo tee -a $CONFIG_FILE
 fi
 
 # Restart service

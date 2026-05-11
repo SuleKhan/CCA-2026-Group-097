@@ -12,7 +12,7 @@ from scheduler_logger import SchedulerLogger, Job
 
 CHECK_INTERVAL = 0.2
 COOLDOWN_SEC = 3
-CPU_THRESHOLD = 70
+CPU_THRESHOLD = 80
 
 TOTAL_CORES = [0, 1, 2, 3]
 MEMCACHED_CORES = [0, 1]
