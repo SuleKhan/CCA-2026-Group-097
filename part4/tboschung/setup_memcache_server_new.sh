@@ -23,9 +23,9 @@ sudo sed -i 's/^-m .*/-m 1024/' "$CONFIG_FILE"
 sudo sed -i "s/^-l .*/-l ${MEMCACHED_INTERNAL_IP}/" "$CONFIG_FILE"
 
 if grep -q "^-t" "$CONFIG_FILE"; then
-  sudo sed -i 's/^-t .*/-t 8/' "$CONFIG_FILE"
+  sudo sed -i 's/^-t .*/-t 3/' "$CONFIG_FILE"
 else
-  echo "-t 8" | sudo tee -a "$CONFIG_FILE" > /dev/null
+  echo "-t 3" | sudo tee -a "$CONFIG_FILE" > /dev/null
 fi
 
 echo "=== Restarting memcached ==="
