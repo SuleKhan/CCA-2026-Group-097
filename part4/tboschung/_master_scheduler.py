@@ -20,14 +20,23 @@ QPS_INTERVAL_SEC = 5.0
 
 # Configure the memcache node in one place.  The same address is used for
 # Fabric SSH control commands and remote Docker commands.
-MEMCACHE_IP = "34.77.140.213"
+MEMCACHE_IP = "35.241.228.86"
 MEMCACHE_USER = "ubuntu"
 MEMCACHE_SSH_KEY = ".ssh/master_node_key"
 
 # The measure node redraws QPS every QPS_INTERVAL_SEC seconds.  CPU decisions
 # use only samples collected inside the current QPS phase, so stale pressure from
 # the previous phase cannot keep the scheduler in a conservative mode.
-MEMCACHE_UTIL_THRESHOLD = 75.0
+#
+# Mode switching uses hysteresis: the upper threshold moves to a more
+# conservative mode, while the lower threshold moves back to a less conservative
+# mode.  Each mode boundary has its own threshold pair so FAST <-> SAFE and
+# SAFE <-> FULL_MEMCACHE can be tuned independently.
+
+FAST2SAFE_LOWER_THRESHOLD = 60.0
+FAST2SAFE_UPPER_THRESHOLD = 75.0
+SAFE2FULL_LOWER_THRESHOLD = FAST2SAFE_LOWER_THRESHOLD + 10
+SAFE2FULL_UPPER_THRESHOLD = FAST2SAFE_UPPER_THRESHOLD + 10
 
 JOB_THREADS = 2
 CPU_LOG_FILE = "cpu_usage.log"
@@ -309,13 +318,28 @@ def mode_job_cores(mode: SchedulerMode) -> list[int]:
 
 
 def next_mode(current: SchedulerMode, fresh_cpu: float) -> SchedulerMode:
-    # One fresh-load threshold controls both protection and recovery.  If the
-    # current interval is cool, recover straight to FAST.  If it is hot, move
-    # one protection step at a time; SAFE can become FULL_MEMCACHE on the next
-    # fresh sample if pressure remains high after getting three cores.
-    if fresh_cpu < MEMCACHE_UTIL_THRESHOLD:
-        return SchedulerMode.FAST
+    # Hysteresis avoids rapid mode flapping around a single CPU percentage.
+    #
+    # FAST <-> SAFE uses FAST_SAFE_* thresholds:
+    #   - FAST promotes to SAFE only at/above FAST_SAFE_UPPER_THRESHOLD.
+    #   - SAFE demotes to FAST only below FAST_SAFE_LOWER_THRESHOLD.
+    #
+    # SAFE <-> FULL_MEMCACHE uses SAFE_FULL_* thresholds:
+    #   - SAFE promotes to FULL_MEMCACHE only at/above SAFE_FULL_UPPER_THRESHOLD.
+    #   - FULL_MEMCACHE demotes to SAFE only below SAFE_FULL_LOWER_THRESHOLD.
     if current == SchedulerMode.FAST:
+        if fresh_cpu >= FAST2SAFE_UPPER_THRESHOLD:
+            return SchedulerMode.SAFE
+        return SchedulerMode.FAST
+
+    if current == SchedulerMode.SAFE:
+        if fresh_cpu >= SAFE2FULL_UPPER_THRESHOLD:
+            return SchedulerMode.FULL_MEMCACHE
+        if fresh_cpu < FAST2SAFE_LOWER_THRESHOLD:
+            return SchedulerMode.FAST
+        return SchedulerMode.SAFE
+
+    if fresh_cpu < SAFE2FULL_LOWER_THRESHOLD:
         return SchedulerMode.SAFE
     return SchedulerMode.FULL_MEMCACHE
 
@@ -444,6 +468,11 @@ def scheduler() -> None:
                 print(f"Finished {current_job.value}")
 
                 if not job_queue:
+                    memcached_cores = MEMCACHED_FULL_CORES.copy()
+                    job_cores = JOB_PAUSED_CORES.copy()
+
+                    print("No jobs left; giving all cores to memcached")
+                    set_memcached_cores(memcached_cores, memcached_pid, mem_conn, logger)
                     break
 
                 # New jobs start with the current policy's job cores.  If the
@@ -474,7 +503,12 @@ def scheduler() -> None:
             cpu_window.add(raw_cpu)
             fresh_cpu = cpu_window.average
 
-            if fresh_cpu >= MEMCACHE_UTIL_THRESHOLD:
+            pressure_threshold = (
+                FAST2SAFE_UPPER_THRESHOLD
+                if mode == SchedulerMode.FAST
+                else SAFE2FULL_UPPER_THRESHOLD
+            )
+            if fresh_cpu >= pressure_threshold:
                 print(
                     f"[WARNING]: Memcached pressure {fresh_cpu:.1f}% "
                     f"over fresh window on {len(memcached_cores)} cores."
@@ -508,13 +542,23 @@ def scheduler() -> None:
             time.sleep(CHECK_INTERVAL_SEC)
 
     finally:
-        if memcached_logged_started:
-            logger.job_end(Job.MEMCACHED)
-        logger.end()
         try:
-            mem_conn.close()
+            if memcached_logged_started:
+                try:
+                    set_memcached_cores(
+                        MEMCACHED_FULL_CORES.copy(),
+                        memcached_pid,
+                        mem_conn,
+                        logger,
+                    )
+                except Exception as e:
+                    print(f"[cleanup warning] Could not restore memcached cores: {e}")
+
+                logger.job_end(Job.MEMCACHED)
+
+            logger.end()
         finally:
-            pass
+            mem_conn.close()
 
 
 if __name__ == "__main__":

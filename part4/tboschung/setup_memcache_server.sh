@@ -7,7 +7,7 @@ set -e
 # scp -o StrictHostKeyChecking=no -i ~/.ssh/cloud-computing measurements_1.py ubuntu@10.0.16.4:~
 
 #MEMCACHED_INTERNAL_IP=$1
-MEMCACHED_INTERNAL_IP="10.0.16.4"
+MEMCACHED_INTERNAL_IP="10.0.16.3"
 
 # Update & install
 sudo apt update

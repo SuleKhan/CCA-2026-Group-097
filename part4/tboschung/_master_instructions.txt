@@ -8,6 +8,8 @@ setup master, agent, measure and memcached
 
 run this command: (this allows the master to ssh to memcache)
     ./setup_server_ssh.sh ubuntu@master_ip ubuntu@memcache_ip
+    ./setup_server_ssh.sh ubuntu@master_ip ubuntu@measure_ip
+    ./setup_server_ssh.sh ubuntu@master_ip ubuntu@agent_ip
     
 copy _master_logger.py and _master_scheduler.py to the master 
 
