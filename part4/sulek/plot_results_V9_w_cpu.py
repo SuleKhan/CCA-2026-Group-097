@@ -6,6 +6,7 @@ import matplotlib.dates as mdates
 from matplotlib.gridspec import GridSpec
 import matplotlib as mpl
 from matplotlib.legend_handler import HandlerTuple
+from collections import defaultdict
 
 # -----------------------------
 # FILE INPUTS
@@ -15,13 +16,25 @@ from matplotlib.legend_handler import HandlerTuple
 # POLICY_DIR = "double_job"
 # POLICY_DIR = "2_core_memcache_2_core_job"
 # POLICY_DIR = "master_run_maybefinal"
-POLICY_DIR = "2_3_core_memcache_1_2_core_job_single_seq"
+# POLICY_DIR = "2_3_core_memcache_1_2_core_job_single_seq"
 # POLICY_DIR = "4_core_memcache"
 # POLICY_DIR = "3_core_memcache"
+# POLICY_DIR = "final_scheduler/Task 4.2/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.2/Run 2"
+# POLICY_DIR = "final_scheduler/Task 4.2/Run 3"
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 2"
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
+# POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 2"
+# POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 3"
+POLICY_DIR = "final_scheduler/Task 4.4/QPS_8/Run 1"
 
-LOG_AGENT_FILE = f"{POLICY_DIR}/agent_log.txt" 
+INTERVAL_SECONDS = 5
+
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
-LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt" 
+LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt"
+LOG_CPU_FILE = f"{POLICY_DIR}/cpu_usage.log"
 
 MEMCACHED_CORES = [0,1,2]
 
@@ -50,15 +63,14 @@ marker_map = {
 # -----------------------------
 # LOAD FILES
 # -----------------------------
-with open(LOG_AGENT_FILE, "r", encoding="utf-8", errors="ignore") as f:
-    agent_log = f.read()
-
 with open(LOG_INTERVAL_FILE, "r", encoding="utf-8", errors="ignore") as f:
     measure_log = f.read()
 
 with open(LOG_SCHED_FILE, "r", encoding="utf-8", errors="ignore") as f:
     jobs_log = f.read()
 
+with open(LOG_CPU_FILE, "r", encoding="utf-8", errors="ignore") as f:
+    cpu_log = f.read()
 
 # -----------------------------
 # PARSE TOTAL SCHEDULER RUNTIME
@@ -104,7 +116,7 @@ if start_ts is None or end_ts is None:
 
 measure_end = datetime.fromtimestamp(end_ts / 1000, tz=timezone.utc)
 
-interval_seconds = 15
+
 
 rows = []
 interval_idx = 0
@@ -112,6 +124,7 @@ interval_idx = 0
 for line in measure_log.splitlines():
     if line.strip().startswith("read"):
         nums = re.findall(r"[\d.]+", line)
+
         if len(nums) < 12:
             continue
 
@@ -119,7 +132,7 @@ for line in measure_log.splitlines():
         p95 = float(nums[-6])
 
         t = datetime.fromtimestamp(
-            (start_ts + interval_idx * interval_seconds * 1000) / 1000,
+            (start_ts + interval_idx * INTERVAL_SECONDS * 1000) / 1000,
             tz=timezone.utc
         )
 
@@ -127,6 +140,38 @@ for line in measure_log.splitlines():
         interval_idx += 1
 
 df = pd.DataFrame(rows, columns=["time", "qps", "p95"])
+
+# -----------------------------
+# PARSE CPU LOG
+# -----------------------------
+cpu_rows = []
+
+for line in cpu_log.splitlines():
+    try:
+        ts_str, cpu_val = line.strip().split(",")
+
+        t = datetime.fromisoformat(ts_str).replace(
+            tzinfo=timezone.utc
+        )
+
+        cpu = float(cpu_val)
+
+        cpu_rows.append([t, cpu])
+
+    except Exception:
+        continue
+
+cpu_df = pd.DataFrame(cpu_rows, columns=["time", "cpu"])
+
+# Smooth CPU usage to 5-second windows
+if not cpu_df.empty:
+    cpu_df = (
+        cpu_df
+        .set_index("time")
+        .resample("5s")
+        .mean()
+        .reset_index()
+    )
 
 # -----------------------------
 # PARSE SCHEDULER LOG (FIXED)
@@ -161,15 +206,19 @@ for line in jobs_log.splitlines():
 
         jobs[job] = {
             "events": [{
-                "time": datetime.fromisoformat(t).replace(tzinfo=timezone.utc),
+                "time": datetime.fromisoformat(t).replace(
+                    tzinfo=timezone.utc
+                ),
                 "cores": cores
             }],
             "end": None
         }
+
         continue
 
     # UPDATE
     m = update_re.search(line)
+
     if m:
         t, job, cores = m.groups()
 
@@ -177,17 +226,24 @@ for line in jobs_log.splitlines():
 
         if job in jobs:
             jobs[job]["events"].append({
-                "time": datetime.fromisoformat(t).replace(tzinfo=timezone.utc),
+                "time": datetime.fromisoformat(t).replace(
+                    tzinfo=timezone.utc
+                ),
                 "cores": cores
             })
+
         continue
 
     # END
     m = job_end_re.search(line)
+
     if m:
         t, job = m.groups()
+
         if job in jobs:
-            jobs[job]["end"] = datetime.fromisoformat(t).replace(tzinfo=timezone.utc)
+            jobs[job]["end"] = datetime.fromisoformat(t).replace(
+                tzinfo=timezone.utc
+            )
 
 # -----------------------------
 # EXTEND MEMCACHED TO END OF MEASURE LOG
@@ -195,6 +251,7 @@ for line in jobs_log.splitlines():
 mem_events = jobs["memcached"]["events"]
 
 if mem_events and end_ts:
+
     last_event = mem_events[-1]
 
     jobs["memcached"]["events"].append({
@@ -210,9 +267,11 @@ if mem_events and end_ts:
 raw_segments = []
 
 for job, info in jobs.items():
+
     events = sorted(info["events"], key=lambda x: x["time"])
 
     for i in range(len(events)):
+
         start = events[i]["time"]
 
         if i < len(events) - 1:
@@ -222,6 +281,7 @@ for job, info in jobs.items():
 
         # create one segment per core
         for core in events[i]["cores"]:
+
             raw_segments.append({
                 "job": job,
                 "core": core,
@@ -231,13 +291,9 @@ for job, info in jobs.items():
 
 # -----------------------------
 # MERGE NEIGHBOURING SEGMENTS
-# (same job + same core)
 # -----------------------------
-from collections import defaultdict
-
 grouped = defaultdict(list)
 
-# group by (job, core)
 for seg in raw_segments:
     grouped[(seg["job"], seg["core"])].append(seg)
 
@@ -245,7 +301,6 @@ job_segments = []
 
 for (job, core), segs in grouped.items():
 
-    # sort by time
     segs.sort(key=lambda s: s["start"])
 
     merged = [segs[0]]
@@ -254,7 +309,6 @@ for (job, core), segs in grouped.items():
 
         prev = merged[-1]
 
-        # neighbouring segments
         if prev["end"] == seg["start"]:
             prev["end"] = seg["end"]
         else:
@@ -262,16 +316,19 @@ for (job, core), segs in grouped.items():
 
     job_segments.extend(merged)
 
-# final sort for plotting
 job_segments.sort(key=lambda s: (s["core"], s["start"]))
 
 # -----------------------------
 # PLOTTING
 # -----------------------------
 all_times = df["time"].tolist()
+
 for seg in job_segments:
     all_times.append(seg["start"])
     all_times.append(seg["end"])
+
+if not cpu_df.empty:
+    all_times.extend(cpu_df["time"].tolist())
 
 xmin = min(all_times)
 xmax = max(all_times)
@@ -293,20 +350,26 @@ ax2.set_xlim(xmin, xmax)
 ax1.margins(x=0)
 ax2.margins(x=0)
 
-#ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-# Absolute time on the bottom shared x-axis
-ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+# Absolute time on bottom axis
+ax2.xaxis.set_major_formatter(
+    mdates.DateFormatter("%H:%M:%S")
+)
+
 ax2.set_xlabel("Absolute time")
 
-# Hide duplicate absolute labels on the upper plot
+# Hide duplicate labels on upper plot
 plt.setp(ax1.get_xticklabels(), visible=False)
 
-# Elapsed-time formatter, measured from xmin
+# -----------------------------
+# ELAPSED TIMER AXIS
+# -----------------------------
 def elapsed_formatter(x, pos):
+
     dt = mdates.num2date(x, tz=timezone.utc)
     elapsed = dt - xmin
 
     total_seconds = int(elapsed.total_seconds())
+
     if total_seconds < 0:
         total_seconds = 0
 
@@ -315,31 +378,48 @@ def elapsed_formatter(x, pos):
 
     if hours:
         return f"{hours:d}:{minutes:02d}:{seconds:02d}"
+
     return f"{minutes:d}:{seconds:02d}"
 
-# Timer axis above the top plot
 ax_timer = ax1.secondary_xaxis("top")
-ax_timer.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(elapsed_formatter))
+
+ax_timer.xaxis.set_major_formatter(
+    mpl.ticker.FuncFormatter(elapsed_formatter)
+)
+
 ax_timer.set_xlabel("Elapsed time from start")
 
 # -----------------------------
 # TOP GRAPH
 # -----------------------------
-ax1.set_title("Latency and Throughput Timeline", fontsize=14, fontweight="bold")
+ax1.set_title(
+    "Latency, Throughput, and CPU Timeline",
+    fontsize=14,
+    fontweight="bold"
+)
 
 xs, qps_vals, p95_vals = [], [], []
 
 COLOR_QPS = "#16B416"
 COLOR_P95 = "#DD0E0E"
+COLOR_CPU = "#1f77b4"
 
 for i in range(len(df)):
+
     t_start = df.iloc[i]["time"]
-    t_end = df.iloc[i + 1]["time"] if i < len(df) - 1 else t_start + timedelta(seconds=interval_seconds)
+
+    t_end = (
+        df.iloc[i + 1]["time"]
+        if i < len(df) - 1
+        else t_start + timedelta(seconds=INTERVAL_SECONDS)
+    )
 
     xs.extend([t_start, t_end])
+
     qps_vals.extend([df.iloc[i]["qps"]] * 2)
     p95_vals.extend([df.iloc[i]["p95"]] * 2)
 
+# QPS
 qps_line, = ax1.step(
     xs,
     qps_vals,
@@ -354,6 +434,7 @@ ax1.set_ylabel("QPS", color=COLOR_QPS)
 ax1.tick_params(axis="y", labelcolor=COLOR_QPS)
 ax1.grid(True, linestyle=":", alpha=0.5)
 
+# p95 latency axis
 ax1b = ax1.twinx()
 
 p95_line, = ax1b.step(
@@ -374,12 +455,51 @@ slo_line = ax1b.axhline(
     label="800 ms SLO"
 )
 
-ax1b.set_ylabel("p95 latency (ms)", color=COLOR_P95)
-ax1b.tick_params(axis="y", labelcolor=COLOR_P95)
+ax1b.set_ylabel(
+    "p95 latency (ms)",
+    color=COLOR_P95
+)
 
-# Metric legend outside the top plot
+ax1b.tick_params(
+    axis="y",
+    labelcolor=COLOR_P95
+)
+
+# CPU axis (third axis)
+ax1c = ax1.twinx()
+
+ax1c.spines["right"].set_position(("outward", 60))
+
+if not cpu_df.empty:
+
+    cpu_line, = ax1c.plot(
+        cpu_df["time"],
+        cpu_df["cpu"],
+        linewidth=1.8,
+        color=COLOR_CPU,
+        label="CPU %"
+    )
+
+    ax1c.set_ylabel(
+        "CPU (%)",
+        color=COLOR_CPU
+    )
+
+    ax1c.tick_params(
+        axis="y",
+        labelcolor=COLOR_CPU
+    )
+
+# -----------------------------
+# METRIC LEGEND
+# -----------------------------
+legend_handles = [qps_line, p95_line, slo_line]
+
+if not cpu_df.empty:
+    legend_handles.append(cpu_line)
+
 ax1.legend(
-    handles=[qps_line, p95_line, slo_line],
+    handles=legend_handles,
     loc="upper left",
     bbox_to_anchor=(1.01, 1.0),
     frameon=True,
@@ -390,14 +510,20 @@ ax1.legend(
 # GANTT
 # -----------------------------
 job_names = sorted(set(seg["job"] for seg in job_segments))
+
 job_color = {
-    job: JOB_COLOR_MAP.get(job, "#333333")  # fallback color
+    job: JOB_COLOR_MAP.get(job, "#333333")
     for job in job_names
 }
 
 for seg in job_segments:
+
     left = mdates.date2num(seg["start"])
-    width = (seg["end"] - seg["start"]).total_seconds() / 86400
+
+    width = (
+        (seg["end"] - seg["start"]).total_seconds()
+        / 86400
+    )
 
     ax2.barh(
         seg["core"],
@@ -410,7 +536,9 @@ for seg in job_segments:
         alpha=0.85
     )
 
-    mid_time = seg["start"] + (seg["end"] - seg["start"]) / 2
+    mid_time = seg["start"] + (
+        (seg["end"] - seg["start"]) / 2
+    )
 
     ax2.plot(
         mid_time,
@@ -422,15 +550,33 @@ for seg in job_segments:
         alpha=0.9
     )
 
-ax2.set_title("Core Allocation Timeline", fontsize=14, fontweight="bold")
+ax2.set_title(
+    "Core Allocation Timeline",
+    fontsize=14,
+    fontweight="bold"
+)
+
 ax2.set_xlabel("Absolute time")
 ax2.set_ylabel("Core")
-ax2.set_yticks(sorted(set(seg["core"] for seg in job_segments)))
-ax2.grid(True, axis="x", linestyle=":", alpha=0.5)
 
+ax2.set_yticks(
+    sorted(set(seg["core"] for seg in job_segments))
+)
+
+ax2.grid(
+    True,
+    axis="x",
+    linestyle=":",
+    alpha=0.5
+)
+
+# -----------------------------
+# JOB LEGEND
+# -----------------------------
 handles = []
 
 for job in job_names:
+
     color_patch = mpl.patches.Patch(
         facecolor=job_color[job],
         edgecolor="black"
@@ -492,7 +638,13 @@ ax2.text(
 plt.tight_layout()
 
 output_file = f"{POLICY_DIR}/analysis_plot.png"
-plt.savefig(output_file, dpi=300, bbox_inches="tight")
+
+plt.savefig(
+    output_file,
+    dpi=300,
+    bbox_inches="tight"
+)
 
 print(f"Plot saved to {output_file}")
+
 plt.show()

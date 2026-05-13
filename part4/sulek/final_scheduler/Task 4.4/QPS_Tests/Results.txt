@@ -1,0 +1,19 @@
+QPS = 5 (3 Runs):
+Total intervals parsed: 900
+Intervals with p95 > 800: 36
+Ratio: 0.0400 (4.00%)
+
+QPS = 10 (1 Run):
+Total intervals parsed: 150
+Intervals with p95 > 800: 4
+Ratio: 0.0267 (2.67%)
+
+QPS = 8 (1 Run):
+Total intervals parsed: 188
+Intervals with p95 > 800: 1
+Ratio: 0.0053 (0.53%)
+
+QPS = 6 (1 Run):
+Total intervals parsed: 250
+Intervals with p95 > 800: 3
+Ratio: 0.0120 (1.20%)
