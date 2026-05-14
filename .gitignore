@@ -1,7 +1,6 @@
 .local
 .DS_Store
 */.DS_Store
-*.png
 /part4/tboschung/logs/
 /part4/tboschung/results/
 
