@@ -1,0 +1,22 @@
+run,log_file,job,start,end,duration_s
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,blackscholes,2026-05-13T16:38:52.212209,2026-05-13T16:40:09.711062,77.498853
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,canneal,2026-05-13T16:40:09.947296,2026-05-13T16:44:07.323636,237.37634
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,freqmine,2026-05-13T16:44:07.529837,2026-05-13T16:50:49.660192,402.130355
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,radix,2026-05-13T16:50:49.941988,2026-05-13T16:50:50.884369,0.942381
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,streamcluster,2026-05-13T16:50:51.241868,2026-05-13T16:59:00.740249,489.498381
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,vips,2026-05-13T16:59:00.985961,2026-05-13T17:00:10.176216,69.190255
+1,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 1/jobs_log.txt,barnes,2026-05-13T17:00:10.462183,2026-05-13T17:00:11.279061,0.816878
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,blackscholes,2026-05-13T17:07:36.172310,2026-05-13T17:08:55.890295,79.717985
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,canneal,2026-05-13T17:08:56.230985,2026-05-13T17:12:59.061427,242.830442
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,freqmine,2026-05-13T17:12:59.371062,2026-05-13T17:19:31.340074,391.969012
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,radix,2026-05-13T17:19:31.597762,2026-05-13T17:19:32.362308,0.764546
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,streamcluster,2026-05-13T17:19:32.631664,2026-05-13T17:27:29.454281,476.822617
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,vips,2026-05-13T17:27:29.696759,2026-05-13T17:28:37.436024,67.739265
+2,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 2/jobs_log.txt,barnes,2026-05-13T17:28:37.731616,2026-05-13T17:28:38.543313,0.811697
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,blackscholes,2026-05-13T17:36:34.285752,2026-05-13T17:37:53.892900,79.607148
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,canneal,2026-05-13T17:37:54.295656,2026-05-13T17:42:06.505756,252.2101
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,freqmine,2026-05-13T17:42:06.759783,2026-05-13T17:48:58.203373,411.44359
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,radix,2026-05-13T17:48:58.546254,2026-05-13T17:48:59.433892,0.887638
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,streamcluster,2026-05-13T17:48:59.768508,2026-05-13T17:57:39.393978,519.62547
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,vips,2026-05-13T17:57:39.704222,2026-05-13T17:59:09.831185,90.126963
+3,/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.4/QPS_5/Run 3/jobs_log.txt,barnes,2026-05-13T17:59:10.239881,2026-05-13T17:59:11.413751,1.17387

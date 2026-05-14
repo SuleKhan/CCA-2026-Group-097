@@ -28,9 +28,9 @@ from collections import defaultdict
 # POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 1"
 # POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 2"
 # POLICY_DIR = "final_scheduler/Task 4.4/QPS_5/Run 3"
-POLICY_DIR = "final_scheduler/Task 4.4/QPS_8/Run 1"
+POLICY_DIR = "final_scheduler/Task 4.4/QPS_10/Run 1"
 
-INTERVAL_SECONDS = 5
+INTERVAL_SECONDS = 10
 
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
 LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt"

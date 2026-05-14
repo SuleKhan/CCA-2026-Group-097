@@ -18,7 +18,7 @@ from matplotlib.legend_handler import HandlerTuple
 # POLICY_DIR = "2_3_core_memcache_1_2_core_job_single_seq"
 # POLICY_DIR = "4_core_memcache"
 # POLICY_DIR = "3_core_memcache"
-POLICY_DIR = "final_scheduler/Task 4.2/Run 1"
+POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
 
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
 LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt" 
