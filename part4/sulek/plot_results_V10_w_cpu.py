@@ -10,9 +10,9 @@ from collections import defaultdict
 # -----------------------------
 # CONFIG
 # -----------------------------
-# POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
+POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
 # POLICY_DIR = "final_scheduler/Task 4.3/Run 2"
-POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
 INTERVAL_SECONDS = 15
 
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
@@ -231,6 +231,8 @@ for _, segs in grouped.items():
 # ELAPSED TIME
 # -----------------------------
 xmin = df["time"].iloc[0]
+x_start = df["time"].iloc[0]
+x_end = df["time"].iloc[-1]
 
 def elapsed(x, pos):
     dt = mdates.num2date(x, tz=timezone.utc)
@@ -363,7 +365,9 @@ handles2, labels2 = ax_p95.get_legend_handles_labels()
 ax_metrics.set_zorder(1)
 ax_metrics.patch.set_alpha(0)
 
-leg = ax_metrics.legend(
+ax_p95.set_zorder(2)
+
+leg = ax_p95.legend(
     handles1 + handles2,
     labels1 + labels2,
     loc="upper right",
@@ -401,6 +405,18 @@ ax_cpu.legend(
 
 ax_cpu.xaxis.set_major_formatter(formatter)
 
+# -----------------------------
+# X AXIS TICK SETUP (ADD THIS)
+# -----------------------------
+major_locator = mdates.MinuteLocator(interval=5)
+minor_locator = mdates.MinuteLocator(interval=1)
+
+for ax in [ax_gantt, ax_metrics, ax_cpu]:
+    ax.xaxis.set_major_locator(major_locator)
+    ax.xaxis.set_minor_locator(minor_locator)
+    ax.set_xlim(df["time"].iloc[0], df["time"].iloc[-1])
+    ax.margins(x=0)
+    
 # -----------------------------
 # FINAL
 # -----------------------------
