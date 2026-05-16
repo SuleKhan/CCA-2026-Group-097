@@ -10,8 +10,8 @@ from scheduler_logger import SchedulerLogger, Job
 # CONFIG
 # =========================
 
-CHECK_INTERVAL = 0.2
-COOLDOWN_SEC = 3
+CHECK_INTERVAL = 0.1
+COOLDOWN_SEC = 2
 CPU_THRESHOLD = 70
 
 TOTAL_CORES = [0, 1, 2, 3]

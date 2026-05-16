@@ -1,5 +1,9 @@
 echo "setting up cluster"
-export KOPS_STATE_STORE=gs://cca-eth-2026-group-097-tboschung/
+
+export CLUSTER_NAME="part4.k8s.local"
+export PROJECT_ID="cca-26-project"   # adjust if this is not exact
+export KOPS_STATE_STORE="gs://cca-eth-2026-group-097-tboschung/"
+echo "setting up cluster"
 PROJECT=$(gcloud config get-value project)
 kops create -f part4.yaml
 kops update cluster --name part4.k8s.local --yes --admin
