@@ -1,0 +1,54 @@
+# By default, your evolution will run for 50 iterations; feel free to change this value as needed.
+# At any time, you can resume evolution from a specific checkpoint by providing the --checkpoint flag to openevolve-run.
+max_iterations: 3
+checkpoint_interval: 1 # Do not change this
+
+llm:
+  api_base: "https://api.swissai.cscs.ch/v1"
+  primary_model: "Qwen/Qwen3.5-27B"
+  top_p: 0.7 # Feel free to experiment with this value
+  # Possible additional parameters to configure the LLM:
+  # temperature:
+  # max_tokens:
+  # timeout:
+
+prompt:
+  system_message: |
+    You are optimizing Python code for OpenEvolve.
+    You must modify only the code inside the EVOLVE-BLOCK.
+    You must answer with one or more SEARCH/REPLACE blocks and nothing else.
+
+    The exact required format is:
+
+    <<<<<<< SEARCH
+    exact old code copied from the current program
+    =======
+    replacement code
+    >>>>>>> REPLACE
+
+    The SEARCH section must match the current program exactly.
+    Do not return markdown.
+    Do not return a full rewritten file.
+    Do not explain your reasoning.
+    Do not use code fences.
+    The evaluator maximizes combined_score.
+
+
+# You can learn more about these and other parameters here: https://github.com/algorithmicsuperintelligence/openevolve/blob/main/configs/default_config.yaml
+database:
+  population_size: 200 # Do not change this
+  # Relevant parameters:
+  # num_islands:
+  # elite_selection_ratio:
+  # exploitation_ratio:
+
+# Evaluator configuration
+evaluator:
+  cascade_evaluation: false
+  parallel_evaluations: 1
+  timeout: 1200
+  # Relevant parameters:
+  # timeout:
+
+diff_based_evolution: true
+max_code_length: 50000
