@@ -18,13 +18,13 @@ spec:
   etcdClusters:
   - cpuRequest: 200m
     etcdMembers:
-    - instanceGroup: master-europe-north1-b
+    - instanceGroup: master-us-central1-b
       name: a
     memoryRequest: 100Mi
     name: main
   - cpuRequest: 100m
     etcdMembers:
-    - instanceGroup: master-europe-north1-b
+    - instanceGroup: master-us-central1-b
       name: a
     memoryRequest: 100Mi
     name: events
@@ -44,8 +44,8 @@ spec:
   sshAccess:
   - 0.0.0.0/0
   subnets:
-  - name: europe-north1
-    region: europe-north1
+  - name: us-central1
+    region: us-central1
     type: Public
   topology:
     dns:
@@ -63,7 +63,7 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: part4.k8s.local
-  name: master-europe-north1-b
+  name: master-us-central1-b
 spec:
   image: ubuntu-os-cloud/ubuntu-2404-noble-amd64-v20250130
   machineType: n2-standard-2
@@ -71,12 +71,12 @@ spec:
   minSize: 1
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: master-europe-north1-b
+    kops.k8s.io/instancegroup: master-us-central1-b
   role: Master
   subnets:
-  - europe-north1
+  - us-central1
   zones:
-  - europe-north1-b
+  - us-central1-b
 
 ---
 
@@ -94,13 +94,13 @@ spec:
   minSize: 1
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: nodes-europe-north1-b
+    kops.k8s.io/instancegroup: nodes-us-central1-b
     cca-project-nodetype: "memcached"
   role: Node
   subnets:
-  - europe-north1
+  - us-central1
   zones:
-  - europe-north1-b
+  - us-central1-b
 
 ---
 
@@ -118,13 +118,13 @@ spec:
   minSize: 1
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: nodes-europe-north1-b
+    kops.k8s.io/instancegroup: nodes-us-central1-b
     cca-project-nodetype: "client-measure"
   role: Node
   subnets:
-  - europe-north1
+  - us-central1
   zones:
-  - europe-north1-b
+  - us-central1-b
 
 ---
 
@@ -142,10 +142,10 @@ spec:
   minSize: 1
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: nodes-europe-north1-b
+    kops.k8s.io/instancegroup: nodes-us-central1-b
     cca-project-nodetype: "client-agent"
   role: Node
   subnets:
-  - europe-north1
+  - us-central1
   zones:
-  - europe-north1-b
+  - us-central1-b

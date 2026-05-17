@@ -4,7 +4,7 @@ import subprocess
 import time
 from datetime import datetime
 
-from scheduler_logger import SchedulerLogger, Job
+from logger import SchedulerLogger, Job
 
 # =========================
 # CONFIG
@@ -68,23 +68,40 @@ def set_memcached_cores(cores):
 # DOCKER JOB CONTROL
 # =========================
 
+def remove_stale_container(name):
+    try:
+        old = client.containers.get(name)
+        print(f"Removing stale container: {name}")
+        old.remove(force=True)
+    except docker.errors.NotFound:
+        pass
+
+
 def start_job(job_enum, image, cores, threads):
     core_str = ",".join(map(str, cores))
 
-    suite = "splash2x" if job_enum in [Job.BARNES, Job.RADIX] else "parsec"
+    if job_enum in [Job.BARNES, Job.RADIX]:
+        # SPLASH2x packages are selected with the fully-qualified package name.
+        cmd = f"./run -a run -p splash2x.{job_enum.value} -i native -n {threads}"
+    else:
+        # The project handout uses -S parsec for PARSEC jobs.
+        cmd = f"./run -a run -S parsec -p {job_enum.value} -i native -n {threads}"
+
+    remove_stale_container(job_enum.value)
+
+    print(f"Launching: docker run --cpuset-cpus='{core_str}' --name {job_enum.value} {image} {cmd}")
 
     container = client.containers.run(
         image,
-        command=f"./run -a run -S {suite} -p {job_enum.value} -i native -n {threads}",
+        command=cmd,
         detach=True,
         name=job_enum.value,
         cpuset_cpus=core_str,
-        remove=False
+        remove=False,  # keep logs available after exit; stale containers are removed before reuse
     )
 
     logger.job_start(job_enum, cores, threads)
     return container
-
 
 def update_job_cores(container, job_enum, cores):
     core_str = ",".join(map(str, cores))
@@ -95,6 +112,7 @@ def update_job_cores(container, job_enum, cores):
 # =========================
 # JOB DEFINITIONS
 # =========================
+
 
 JOB_MAP = [
     (Job.BLACKSCHOLES, "anakli/cca:parsec_blackscholes"),
@@ -145,45 +163,54 @@ def scheduler():
             current_job,
             image,
             [3],
-            threads=THREADS
+            threads=THREADS,
         )
 
     # -------------------------
     # MAIN LOOP
     # -------------------------
-    while True:
-        if container is not None:
-            container.reload()
+    while container is not None:
 
-            # job finished
-            if container.status == "exited":
+        container.reload()
 
-                logger.job_end(current_job)
-                print(f"Finished {current_job.value}")
+        # -------------------------
+        # JOB FINISHED
+        # -------------------------
+        if container.status == "exited":
+            exit_code = container.attrs.get("State", {}).get("ExitCode")
 
-                if job_queue:
-                    current_job, image = job_queue.pop(0)
+            logger.job_end(current_job)
+            print(f"Finished {current_job.value} (exit code {exit_code})")
 
-                    print(f"Starting {current_job.value}")
+            if exit_code != 0:
+                print(f"WARNING: {current_job.value} exited with non-zero status. Check: docker logs {current_job.value}")
 
-                    container = start_job(
-                        current_job,
-                        image,
-                        [3],
-                        threads=THREADS
-                    )
+            if job_queue:
+                current_job, image = job_queue.pop(0)
 
-                    using_core2 = False
-                else:
-                    print("All jobs finished")
+                print(f"Starting {current_job.value}")
 
-                    # Give all cores back to memcached
-                    set_memcached_cores(TOTAL_CORES)
+                container = start_job(
+                    current_job,
+                    image,
+                    [3],
+                    threads=THREADS,
+                )
 
-                    logger.update_cores(Job.MEMCACHED, TOTAL_CORES)
+                using_core2 = False
+                high_cpu_cycles = 0
+                low_cpu_cycles = 0
+                last_switch_time = time.time()
 
-                    container = None
-                    current_job = None
+                # Start monitoring the new job on the next loop iteration.
+                time.sleep(CHECK_INTERVAL)
+                continue
+
+            print("All jobs finished")
+
+            # Give all cores back to memcached.
+            set_memcached_cores(TOTAL_CORES)
+            break
 
         # -------------------------
         # CPU CONTROL (RAW + COOLDOWN)
@@ -195,67 +222,65 @@ def scheduler():
 
         log_cpu(cpu, per_core_cpu)
 
-        if container is not None:
+        # -------------------------
+        # CPU STABILITY TRACKING
+        # -------------------------
+        if cpu > CPU_THRESHOLD:
+            high_cpu_cycles += 1
+            low_cpu_cycles = 0
+        else:
+            low_cpu_cycles += 1
+            high_cpu_cycles = 0
 
-            # -------------------------
-            # CPU STABILITY TRACKING
-            # -------------------------
-            if cpu > CPU_THRESHOLD:
-                high_cpu_cycles += 1
-                low_cpu_cycles = 0
-            else:
-                low_cpu_cycles += 1
-                high_cpu_cycles = 0
+        # -------------------------
+        # SHRINK JOB
+        # -------------------------
+        if (
+            high_cpu_cycles >= HIGH_CPU_CYCLES_REQUIRED
+            and (now - last_switch_time) > COOLDOWN_SEC
+        ):
 
-            # -------------------------
-            # SHRINK JOB
-            # -------------------------
-            if (
-                high_cpu_cycles >= HIGH_CPU_CYCLES_REQUIRED
-                and (now - last_switch_time) > COOLDOWN_SEC
-            ):
+            # give cores to memcached
+            set_memcached_cores([0, 1, 2])
 
-                # give cores to memcached
-                set_memcached_cores([0, 1, 2])
+            # shrink job if needed
+            if using_core2:
+                print(
+                    f"Shrinking {current_job.value} → core [3] "
+                    f"(CPU {cpu:.1f}%, {high_cpu_cycles} cycles)"
+                )
 
-                # shrink job if needed
-                if using_core2:
-                    print(
-                        f"Shrinking {current_job.value} → core [3] "
-                        f"(CPU {cpu:.1f}%, {high_cpu_cycles} cycles)"
-                    )
+                apply_cores(container, [3])
+                using_core2 = False
+                logger.update_cores(current_job, [3])
 
-                    apply_cores(container, [3])
-                    using_core2 = False
-                    logger.update_cores(current_job, [3])
+            last_switch_time = now
+            high_cpu_cycles = 0
 
-                last_switch_time = now
-                high_cpu_cycles = 0
+        # -------------------------
+        # EXPAND JOB
+        # -------------------------
+        elif (
+            low_cpu_cycles >= LOW_CPU_CYCLES_REQUIRED
+            and (now - last_switch_time) > COOLDOWN_SEC
+        ):
 
-            # -------------------------
-            # EXPAND JOB
-            # -------------------------
-            elif (
-                low_cpu_cycles >= LOW_CPU_CYCLES_REQUIRED
-                and (now - last_switch_time) > COOLDOWN_SEC
-            ):
+            # return memcached to normal
+            set_memcached_cores([0, 1])
 
-                # return memcached to normal
-                set_memcached_cores([0, 1])
+            # expand job
+            if not using_core2:
+                print(
+                    f"Expanding {current_job.value} → cores [2,3] "
+                    f"(CPU {cpu:.1f}%, {low_cpu_cycles} cycles)"
+                )
 
-                # expand job
-                if not using_core2:
-                    print(
-                        f"Expanding {current_job.value} → cores [2,3] "
-                        f"(CPU {cpu:.1f}%, {low_cpu_cycles} cycles)"
-                    )
+                apply_cores(container, [2, 3])
+                using_core2 = True
+                logger.update_cores(current_job, [2, 3])
 
-                    apply_cores(container, [2, 3])
-                    using_core2 = True
-                    logger.update_cores(current_job, [2, 3])
-
-                last_switch_time = now
-                low_cpu_cycles = 0
+            last_switch_time = now
+            low_cpu_cycles = 0
 
         time.sleep(CHECK_INTERVAL)
 
