@@ -12,7 +12,7 @@ from logger import SchedulerLogger, Job
 
 CHECK_INTERVAL = 0.2
 COOLDOWN_SEC = 3
-CPU_THRESHOLD = 70
+CPU_THRESHOLD = 65
 
 TOTAL_CORES = [0, 1, 2, 3]
 MEMCACHED_CORES = [0, 1]
@@ -208,9 +208,14 @@ def scheduler():
 
             print("All jobs finished")
 
-            # Give all cores back to memcached.
-            set_memcached_cores(TOTAL_CORES)
-            break
+                    # Give all cores back to memcached
+                    set_memcached_cores(TOTAL_CORES)
+
+                    logger.update_cores(Job.MEMCACHED, TOTAL_CORES)
+
+                    container = None
+                    current_job = None
+                    logger.end()
 
         # -------------------------
         # CPU CONTROL (RAW + COOLDOWN)

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # python table_task3.py "/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.3/Run 1/jobs_log.txt" "/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.3/Run 2/jobs_log.txt" "/Users/Tobias/Documents/coding_projects/CCA-2026-Group-097/part4/sulek/final_scheduler/Task 4.3/Run 3/jobs_log.txt"
+# python table_task3.py "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.3 FIXED\Run 1\jobs_log.txt" "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.3 FIXED\Run 2\jobs_log.txt" "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.3 FIXED\Run 3\jobs_log.txt"
+# python table_task3.py "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.4 FIXED\QPS_5\Run 1\jobs_log.txt" "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.4 FIXED\QPS_5\Run 2\jobs_log.txt" "C:\Users\sulek\ETH\Msc-CS\Semester 2\Cloud Computing Architecture\cloud-comp-arch-project\part4\sulek\final_scheduler\Task 4.4 FIXED\QPS_5\Run 3\jobs_log.txt"
 
 import argparse
 import csv

@@ -7,14 +7,18 @@ import pandas as pd
 # CONFIG
 # --------------------------------------------------
 
+# BASE_DIR = Path(
+#     "/Users/Tobias/Documents/coding_projects/"
+#     "CCA-2026-Group-097/part4/sulek/final_scheduler/"
+#     "Task 4.4/QPS_6"
+# )
+
 BASE_DIR = Path(
-    "/Users/Tobias/Documents/coding_projects/"
-    "CCA-2026-Group-097/part4/sulek/final_scheduler/"
-    "Task 4.4/QPS_6"
+    "final_scheduler/Task 4.4 FIXED/QPS_7"
 )
 
-#RUNS = ["Run 1", "Run 2", "Run 3"]
 RUNS = ["Run 1", "Run 2", "Run 3"]
+# RUNS = ["Run 1"]
 
 INTERVAL_SECONDS = 5
 

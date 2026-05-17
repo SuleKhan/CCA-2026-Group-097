@@ -11,7 +11,8 @@ import matplotlib.ticker as mticker
 # -----------------------------
 # CONFIG
 # -----------------------------
-POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
+POLICY_DIR = "final_scheduler/Task 4.2 FIXED/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
 # POLICY_DIR = "final_scheduler/Task 4.3/Run 2"
 # POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
 INTERVAL_SECONDS = 15

@@ -13,8 +13,15 @@ import matplotlib.ticker as mticker
 # -----------------------------
 # POLICY_DIR = "final_scheduler/Task 4.3/Run 1"
 # POLICY_DIR = "final_scheduler/Task 4.3/Run 2"
-POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
-INTERVAL_SECONDS = 15
+# POLICY_DIR = "final_scheduler/Task 4.3/Run 3"
+# POLICY_DIR = "final_scheduler/Task 4.3 FIXED/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.3 FIXED/Run 2"
+# POLICY_DIR = "final_scheduler/Task 4.3 FIXED/Run 3"
+# POLICY_DIR = "final_scheduler/Task 4.4 FIXED/QPS_5/Run 1"
+# POLICY_DIR = "final_scheduler/Task 4.4 FIXED/QPS_5/Run 2"
+# POLICY_DIR = "final_scheduler/Task 4.4 FIXED/QPS_5/Run 3"
+POLICY_DIR = "final_scheduler/Task 4.4 FIXED/QPS_7/Run 3"
+INTERVAL_SECONDS = 7
 
 LOG_INTERVAL_FILE = f"{POLICY_DIR}/measure_log.txt"
 LOG_SCHED_FILE = f"{POLICY_DIR}/jobs_log.txt"

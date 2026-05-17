@@ -51,7 +51,7 @@ def calculate_p95_ratio(file_path, threshold=800):
 
 
 # LOG_FILE = "final_scheduler/Task 4.4/QPS_Tests/measures_concat_qps_5.txt"
-LOG_FILE = "final_scheduler/Task 4.4/QPS_Tests/measures_concat_qps_6.txt"
+LOG_FILE = "final_scheduler/Task 4.4 FIXED/QPS_Tests/measures_concat_qps_6.txt"
 # LOG_FILE = "final_scheduler/Task 4.4/QPS_Tests/measures_concat_qps_8.txt"
 # LOG_FILE = "final_scheduler/Task 4.4/QPS_Tests/measures_concat_qps_10.txt"
 
